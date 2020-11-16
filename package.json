@@ -1,0 +1,19 @@
+{
+  "name": "@nimiq/fastspot-api",
+  "version": "1.0.0",
+  "description": "Typescript library to interact with the Fastspot API",
+  "repository": "git@github.com:nimiq/fastspot-api.git",
+  "author": "sisou <hello@soerenschwert.de>",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.5"
+  }
+}

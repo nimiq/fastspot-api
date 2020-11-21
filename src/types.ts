@@ -83,6 +83,7 @@ export type FastspotPreSwap = {
 
 export type FastspotSwap = FastspotPreSwap & {
     hash: string,
+    secret?: string,
     contracts: FastspotContract<SwapAsset>[],
 };
 
@@ -179,6 +180,7 @@ export type PreSwap = Estimate & {
 
 export type Swap = PreSwap & {
     hash: string,
+    secret?: string,
     contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>>,
 };
 

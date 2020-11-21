@@ -95,6 +95,7 @@ export function convertSwap(swap: FastspotPreSwap | FastspotSwap): PreSwap | Swa
         const fullSwap: Swap = {
             ...preSwap,
             hash: swap.hash,
+            ...(swap.secret ?  { secret: swap.secret } : {}),
             contracts,
         };
 

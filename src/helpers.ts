@@ -14,7 +14,7 @@ import {
     HtlcDetails,
 } from './types';
 
-export function coinsToUnits(asset: SwapAsset, value: string | number): number {
+export function coinsToUnits(asset: SwapAsset, value: string | number, roundUp = false): number {
     let decimals: number;
     switch (asset) {
         case SwapAsset.NIM: decimals = 5; break;
@@ -23,8 +23,14 @@ export function coinsToUnits(asset: SwapAsset, value: string | number): number {
         default: throw new Error(`Invalid asset ${asset}`);
     }
     const parts = value.toString().split('.');
-    parts[1] = (parts[1] || '').substr(0, decimals).padEnd(decimals, '0');
-    return parseInt(parts.join(''), 10);
+    parts[1] = (parts[1] || '').substr(0, decimals + 1).padEnd(decimals + 1, '0');
+    const units = parseInt(parts.join(''), 10) / 10;
+
+    if (roundUp) {
+        return Math.ceil(units);
+    }
+
+    return Math.floor(units);
 }
 
 export function convertFromData(from: FastspotPrice): PriceData {
@@ -32,9 +38,9 @@ export function convertFromData(from: FastspotPrice): PriceData {
     return {
         asset,
         amount: coinsToUnits(asset, from.amount),
-        fee: coinsToUnits(asset, from.fundingNetworkFee.total),
-        feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit),
-        serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total),
+        fee: coinsToUnits(asset, from.fundingNetworkFee.total, true),
+        feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, true),
+        serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, true),
     };
 }
 
@@ -43,9 +49,9 @@ export function convertToData(to: FastspotPrice): PriceData {
     return {
         asset,
         amount: coinsToUnits(asset, to.amount),
-        fee: coinsToUnits(asset, to.finalizeNetworkFee.total),
-        feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit),
-        serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total),
+        fee: coinsToUnits(asset, to.finalizeNetworkFee.total, true),
+        feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, true),
+        serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, true),
     };
 }
 

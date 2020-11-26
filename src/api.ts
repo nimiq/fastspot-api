@@ -39,20 +39,20 @@ export function init(url: string, key: string) {
 async function api(path: string, method: 'POST' | 'GET' | 'DELETE', body?: object): Promise<FastspotResult> {
     if (!API_URL || !API_KEY) throw new Error('API URL and key not set, call init() first');
 
-    return fetch(`${API_URL}${path}`, {
+    const req = await fetch(`${API_URL}${path}`, {
         method,
         headers: {
             'Content-Type': 'application/json',
             'X-FAST-ApiKey': API_KEY,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
-    }).then(async (res) => {
-        if (!res.ok) {
-            const error = await res.json() as FastspotError;
-            throw new Error(error.detail);
-        }
-        return res.json();
     });
+
+    if (!req.ok) {
+        const error = await req.json() as FastspotError;
+        throw new Error(error.detail);
+    }
+    return req.json();
 }
 
 export async function getEstimate(from: RequestAsset<SwapAsset>, to: SwapAsset): Promise<Estimate>;

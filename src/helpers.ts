@@ -11,6 +11,7 @@ import {
     PreSwap,
     Swap,
     Limits,
+    HtlcDetails,
 } from './types';
 
 export function coinsToUnits(asset: SwapAsset, value: string | number): number {
@@ -19,7 +20,7 @@ export function coinsToUnits(asset: SwapAsset, value: string | number): number {
         case SwapAsset.NIM: decimals = 5; break;
         case SwapAsset.BTC: decimals = 8; break;
         case SwapAsset.EUR: decimals = 2; break;
-        default: throw new Error('Invalid asset');
+        default: throw new Error(`Invalid asset ${asset}`);
     }
     const parts = value.toString().split('.');
     parts[1] = (parts[1] || '').substr(0, decimals).padEnd(decimals, '0');
@@ -49,25 +50,41 @@ export function convertToData(to: FastspotPrice): PriceData {
 }
 
 export function convertContract<T extends SwapAsset>(contract: FastspotContract<T>): Contract<T> {
+    let htlc: HtlcDetails;
+
+    switch (contract.asset) {
+        case SwapAsset.NIM:
+            htlc = {
+                address: (contract as FastspotContract<SwapAsset.NIM>).intermediary.address,
+                timeoutBlock: (contract as FastspotContract<SwapAsset.NIM>).intermediary.timeoutBlock,
+                data: (contract as FastspotContract<SwapAsset.NIM>).intermediary.data,
+            };
+            break;
+        case SwapAsset.BTC:
+            htlc = {
+                address: (contract as FastspotContract<SwapAsset.BTC>).intermediary.p2wsh,
+                script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
+            };
+            break;
+        case SwapAsset.EUR:
+            htlc = {
+                address: (contract as FastspotContract<SwapAsset.EUR>).intermediary.contractId || contract.id,
+            };
+            break;
+        default: throw new Error(`Invalid asset ${contract.asset}`);
+    }
+
     return {
         asset: contract.asset,
         refundAddress: contract.refund.address,
-        redeemAddress: contract.recipient.address,
+        redeemAddress: contract.asset === SwapAsset.EUR
+            ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
+            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC>).recipient.address,
         amount: coinsToUnits(contract.asset, contract.amount),
         timeout: contract.timeout,
         direction: contract.direction,
         status: contract.status,
-
-        ...(contract.asset === SwapAsset.NIM ? {
-            htlc: (contract as FastspotContract<SwapAsset.NIM>).intermediary,
-        } : {}),
-
-        ...(contract.asset === SwapAsset.BTC ? {
-            htlc: {
-                address: (contract as FastspotContract<SwapAsset.BTC>).intermediary.p2wsh,
-                script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
-            },
-        } : {}),
+        htlc,
     } as Contract<T>;
 }
 

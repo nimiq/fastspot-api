@@ -52,7 +52,14 @@ export type FastspotEstimate = {
 export type FastspotContract<T extends SwapAsset> = {
     asset: T,
     refund: { address: string },
-    recipient: { address: string },
+    recipient: T extends SwapAsset.EUR ? {
+        kty: string,
+        crv: string,
+        x: string,
+        y?: string,
+    } : {
+        address: string,
+    },
     amount: number,
     timeout: number,
     direction: 'send' | 'receive',
@@ -66,6 +73,8 @@ export type FastspotContract<T extends SwapAsset> = {
         p2sh: string,
         p2wsh: string,
         scriptBytes: string,
+    } : T extends SwapAsset.EUR ? {
+        contractId?: string,
     } : never,
 };
 
@@ -155,6 +164,12 @@ export type BtcHtlcDetails = {
     script: string,
 };
 
+export type EurHtlcDetails = {
+    address: string,
+};
+
+export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | EurHtlcDetails;
+
 export type Contract<T extends SwapAsset> = {
     asset: T,
     refundAddress: string,
@@ -165,6 +180,7 @@ export type Contract<T extends SwapAsset> = {
     status: string,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
+        : T extends SwapAsset.EUR ? EurHtlcDetails
         : never,
 };
 

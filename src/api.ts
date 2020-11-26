@@ -101,13 +101,34 @@ export async function createSwap(
 
 export async function confirmSwap(
     swap: PreSwap,
-    redeem: { asset: SwapAsset, address: string },
-    refund: { asset: SwapAsset, address: string },
+    redeem: {
+        asset: SwapAsset.NIM | SwapAsset.BTC,
+        address: string,
+    } | {
+        asset: SwapAsset.EUR,
+        kty: string,
+        crv: string,
+        x: string,
+        y?: string,
+    },
+    refund: {
+        asset: SwapAsset.NIM | SwapAsset.BTC,
+        address: string,
+    } | {
+        asset: SwapAsset.EUR,
+    },
 ): Promise<Swap> {
     const result = await api(`/swaps/${swap.id}`, 'POST', {
         confirm: true,
-        beneficiary: { [redeem.asset]: redeem.address },
-        refund: { [refund.asset]: refund.address },
+        beneficiary: redeem.asset === SwapAsset.EUR
+            ? { [redeem.asset]: {
+                kty: redeem.kty,
+                crv: redeem.crv,
+                x: redeem.x,
+                ...(redeem.y ? { y: redeem.y } : {}),
+            } }
+            : { [redeem.asset]: redeem.address },
+        refund: { [refund.asset]: 'address' in refund ? refund.address : '' },
     }) as FastspotSwap;
 
     return convertSwap(result);

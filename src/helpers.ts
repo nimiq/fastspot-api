@@ -41,6 +41,7 @@ export function convertFromData(from: FastspotPrice): PriceData {
         fee: coinsToUnits(asset, from.fundingNetworkFee.total, true),
         feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, true),
         serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, true),
+        serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, true),
     };
 }
 
@@ -52,6 +53,7 @@ export function convertToData(to: FastspotPrice): PriceData {
         fee: coinsToUnits(asset, to.finalizeNetworkFee.total, true),
         feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, true),
         serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, true),
+        serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, true),
     };
 }
 
@@ -75,6 +77,7 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
         case SwapAsset.EUR:
             htlc = {
                 address: (contract as FastspotContract<SwapAsset.EUR>).intermediary.contractId || contract.id,
+                // TODO: Parse clearing instructions if provided
             };
             break;
         default: throw new Error(`Invalid asset ${contract.asset}`);

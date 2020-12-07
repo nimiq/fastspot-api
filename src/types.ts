@@ -38,7 +38,7 @@ export type FastspotPrice = {
     name: string,
     amount: string,
     fundingNetworkFee: FastspotFee,
-    operatingNetworkFee: FastspotFee,
+    operatingNetworkFee: Omit<FastspotFee, 'perUnit'>,
     finalizeNetworkFee: FastspotFee,
 };
 
@@ -145,6 +145,7 @@ export type PriceData = {
     fee: number,
     feePerUnit: number,
     serviceNetworkFee: number,
+    serviceEscrowFee: number,
 };
 
 export type Estimate = {

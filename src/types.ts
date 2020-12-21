@@ -28,7 +28,7 @@ export type FastspotAsset = {
 };
 
 export type FastspotFee = {
-    perUnit: string,
+    perUnit?: string,
     total: string,
     totalIsIncluded: boolean,
 };
@@ -38,7 +38,7 @@ export type FastspotPrice = {
     name: string,
     amount: string,
     fundingNetworkFee: FastspotFee,
-    operatingNetworkFee: Omit<FastspotFee, 'perUnit'>,
+    operatingNetworkFee: FastspotFee,
     finalizeNetworkFee: FastspotFee,
 };
 
@@ -143,7 +143,7 @@ export type PriceData = {
     asset: SwapAsset,
     amount: number,
     fee: number,
-    feePerUnit: number,
+    feePerUnit?: number,
     serviceNetworkFee: number,
     serviceEscrowFee: number,
 };

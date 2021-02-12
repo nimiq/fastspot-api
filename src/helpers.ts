@@ -1,6 +1,7 @@
 import {
     RequestAsset,
     SwapAsset,
+    ReferenceAsset,
     PriceData,
     FastspotPrice,
     FastspotContract,
@@ -14,12 +15,13 @@ import {
     HtlcDetails,
 } from './types';
 
-export function coinsToUnits(asset: SwapAsset, value: string | number, roundUp = false): number {
+export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, roundUp = false): number {
     let decimals: number;
     switch (asset) {
         case SwapAsset.NIM: decimals = 5; break;
         case SwapAsset.BTC: decimals = 8; break;
         case SwapAsset.EUR: decimals = 2; break;
+        case ReferenceAsset. USD: decimals = 2; break;
         default: throw new Error(`Invalid asset ${asset}`);
     }
     const parts = value.toString().split('.');
@@ -141,6 +143,10 @@ export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): L
         current: coinsToUnits(limits.asset, limits.current),
         daily: coinsToUnits(limits.asset, limits.daily),
         monthly: coinsToUnits(limits.asset, limits.monthly),
+        referenceAsset: limits.referenceAsset,
+        referenceCurrent: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
+        referenceDaily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
+        referenceMonthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
     };
 }
 

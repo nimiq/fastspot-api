@@ -4,6 +4,10 @@ export enum SwapAsset {
     EUR = 'EUR',
 }
 
+export enum ReferenceAsset {
+    USD = 'USD',
+}
+
 // Internal Types
 
 export type FastspotAsset = {
@@ -101,6 +105,10 @@ export type FastspotLimits<T extends SwapAsset> = {
     current: string,
     daily: string,
     monthly: string,
+    referenceAsset: ReferenceAsset,
+    referenceCurrent: string,
+    referenceDaily: string,
+    referenceMonthly: string,
 };
 
 export type FastspotResult
@@ -206,4 +214,8 @@ export type Limits<T extends SwapAsset> = {
     current: number,
     daily: number,
     monthly: number,
+    referenceAsset: ReferenceAsset,
+    referenceCurrent: number,
+    referenceDaily: number,
+    referenceMonthly: number,
 };

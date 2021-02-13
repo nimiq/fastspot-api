@@ -111,12 +111,20 @@ export type FastspotLimits<T extends SwapAsset> = {
     referenceMonthly: string,
 };
 
+export type FastspotUserLimits = {
+    asset: ReferenceAsset,
+    current: string,
+    daily: string,
+    monthly: string,
+}
+
 export type FastspotResult
     = FastspotAsset[]
     | FastspotEstimate[]
     | FastspotSwap
     | FastspotContractWithEstimate<SwapAsset>
-    | FastspotLimits<SwapAsset>;
+    | FastspotLimits<SwapAsset>
+    | FastspotUserLimits;
 
 export type FastspotError = {
     status: number,
@@ -218,4 +226,11 @@ export type Limits<T extends SwapAsset> = {
     referenceCurrent: number,
     referenceDaily: number,
     referenceMonthly: number,
+};
+
+export type UserLimits = {
+    asset: ReferenceAsset,
+    current: number,
+    daily: number,
+    monthly: number,
 };

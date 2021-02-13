@@ -7,6 +7,7 @@ import {
     FastspotContractWithEstimate,
     FastspotSwap,
     FastspotLimits,
+    FastspotUserLimits,
     RequestAsset,
     SwapAsset,
     Estimate,
@@ -14,6 +15,7 @@ import {
     ContractWithEstimate,
     Swap,
     Limits,
+    UserLimits,
     AssetList,
 } from './types';
 
@@ -24,6 +26,7 @@ import {
     convertContract,
     convertSwap,
     convertLimits,
+    convertUserLimits,
     coinsToUnits,
 } from './helpers';
 
@@ -157,6 +160,11 @@ export async function getContract<T extends SwapAsset>(asset: T, address: string
 export async function getLimits<T extends SwapAsset>(asset: T, address: string): Promise<Limits<T>> {
     const result = await api(`/limits/${asset}/${address}`, 'GET') as FastspotLimits<T>;
     return convertLimits(result);
+}
+
+export async function getUserLimits(uid: string): Promise<UserLimits> {
+    const result = await api(`/limits/${uid}`, 'GET') as FastspotUserLimits;
+    return convertUserLimits(result);
 }
 
 export async function getAssets(): Promise<AssetList> {

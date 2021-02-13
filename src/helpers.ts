@@ -8,10 +8,12 @@ import {
     FastspotPreSwap,
     FastspotSwap,
     FastspotLimits,
+    FastspotUserLimits,
     Contract,
     PreSwap,
     Swap,
     Limits,
+    UserLimits,
     HtlcDetails,
 } from './types';
 
@@ -147,6 +149,15 @@ export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): L
         referenceCurrent: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
         referenceDaily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
         referenceMonthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
+    };
+}
+
+export function convertUserLimits(limits: FastspotUserLimits): UserLimits {
+    return {
+        asset: limits.asset,
+        current: coinsToUnits(limits.asset, limits.current),
+        daily: coinsToUnits(limits.asset, limits.daily),
+        monthly: coinsToUnits(limits.asset, limits.monthly),
     };
 }
 

@@ -120,6 +120,7 @@ export async function confirmSwap(
     } | {
         asset: SwapAsset.EUR,
     },
+    uid?: string,
 ): Promise<Swap> {
     const result = await api(`/swaps/${swap.id}`, 'POST', {
         confirm: true,
@@ -132,6 +133,7 @@ export async function confirmSwap(
             } }
             : { [redeem.asset]: redeem.address },
         refund: { [refund.asset]: 'address' in refund ? refund.address : '' },
+        ...(uid ? { uid } : {}),
     }) as FastspotSwap;
 
     return convertSwap(result);

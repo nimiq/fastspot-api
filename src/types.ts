@@ -102,20 +102,29 @@ export type FastspotSwap = FastspotPreSwap & {
 
 export type FastspotLimits<T extends SwapAsset> = {
     asset: T,
-    current: string,
     daily: string,
+    dailyRemaining: string,
     monthly: string,
+    monthlyRemaining: string,
+    swap: string,
+    current: string,
     referenceAsset: ReferenceAsset,
-    referenceCurrent: string,
     referenceDaily: string,
+    referenceDailyRemaining: string,
     referenceMonthly: string,
+    referenceMonthlyRemaining: string,
+    referenceSwap: string,
+    referenceCurrent: string,
 };
 
 export type FastspotUserLimits = {
     asset: ReferenceAsset,
-    current: string,
     daily: string,
+    dailyRemaining: string,
     monthly: string,
+    monthlyRemaining: string,
+    swap: string,
+    current: string,
 }
 
 export type FastspotResult
@@ -219,18 +228,29 @@ export type Swap = PreSwap & {
 
 export type Limits<T extends SwapAsset> = {
     asset: T,
-    current: number,
     daily: number,
+    dailyRemaining: number,
     monthly: number,
-    referenceAsset: ReferenceAsset,
-    referenceCurrent: number,
-    referenceDaily: number,
-    referenceMonthly: number,
+    monthlyRemaining: number,
+    perSwap: number,
+    current: number,
+    reference: {
+        asset: ReferenceAsset,
+        daily: number,
+        dailyRemaining: number,
+        monthly: number,
+        monthlyRemaining: number,
+        perSwap: number,
+        current: number,
+    },
 };
 
 export type UserLimits = {
     asset: ReferenceAsset,
-    current: number,
     daily: number,
+    dailyRemaining: number,
     monthly: number,
+    monthlyRemaining: number,
+    perSwap: number,
+    current: number,
 };

@@ -142,22 +142,33 @@ export function convertSwap(swap: FastspotPreSwap | FastspotSwap): PreSwap | Swa
 export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): Limits<T> {
     return {
         asset: limits.asset,
-        current: coinsToUnits(limits.asset, limits.current),
         daily: coinsToUnits(limits.asset, limits.daily),
+        dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
         monthly: coinsToUnits(limits.asset, limits.monthly),
-        referenceAsset: limits.referenceAsset,
-        referenceCurrent: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
-        referenceDaily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
-        referenceMonthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
+        monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
+        perSwap: coinsToUnits(limits.asset, limits.swap),
+        current: coinsToUnits(limits.asset, limits.current),
+        reference: {
+            asset: limits.referenceAsset,
+            daily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
+            dailyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceDailyRemaining),
+            monthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
+            monthlyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceMonthlyRemaining),
+            perSwap: coinsToUnits(limits.referenceAsset, limits.referenceSwap),
+            current: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
+        },
     };
 }
 
 export function convertUserLimits(limits: FastspotUserLimits): UserLimits {
     return {
         asset: limits.asset,
-        current: coinsToUnits(limits.asset, limits.current),
         daily: coinsToUnits(limits.asset, limits.daily),
+        dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
         monthly: coinsToUnits(limits.asset, limits.monthly),
+        monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
+        perSwap: coinsToUnits(limits.asset, limits.swap),
+        current: coinsToUnits(limits.asset, limits.current),
     };
 }
 

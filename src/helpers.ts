@@ -93,7 +93,7 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
 
     return {
         asset: contract.asset,
-        refundAddress: contract.refund.address,
+        refundAddress: contract.refund?.address || '',
         redeemAddress: contract.asset === SwapAsset.EUR
             ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
             : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC>).recipient.address,

@@ -55,7 +55,7 @@ export type FastspotEstimate = {
 
 export type FastspotContract<T extends SwapAsset> = {
     asset: T,
-    refund: { address: string },
+    refund?: { address: string },
     recipient: T extends SwapAsset.EUR ? {
         kty: string,
         crv: string,

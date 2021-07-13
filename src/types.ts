@@ -8,6 +8,13 @@ export enum ReferenceAsset {
     USD = 'USD',
 }
 
+export const Precision = {
+    [SwapAsset.NIM]: 5,
+    [SwapAsset.BTC]: 8,
+    [SwapAsset.EUR]: 2,
+    [ReferenceAsset.USD]: 2,
+} as const;
+
 // Internal Types
 
 export type FastspotAsset = {

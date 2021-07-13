@@ -2,6 +2,7 @@ import {
     RequestAsset,
     SwapAsset,
     ReferenceAsset,
+    Precision,
     PriceData,
     FastspotPrice,
     FastspotContract,
@@ -18,14 +19,9 @@ import {
 } from './types';
 
 export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, roundUp = false): number {
-    let decimals: number;
-    switch (asset) {
-        case SwapAsset.NIM: decimals = 5; break;
-        case SwapAsset.BTC: decimals = 8; break;
-        case SwapAsset.EUR: decimals = 2; break;
-        case ReferenceAsset. USD: decimals = 2; break;
-        default: throw new Error(`Invalid asset ${asset}`);
-    }
+    let decimals = Precision[asset];
+    if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
+
     const parts = value.toString().split('.');
     parts[1] = (parts[1] || '').substr(0, decimals + 1).padEnd(decimals + 1, '0');
     const units = parseInt(parts.join(''), 10) / 10;

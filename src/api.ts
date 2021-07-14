@@ -80,6 +80,7 @@ export async function getEstimate(
         from: convertFromData(inputObject),
         to: convertToData(outputObject),
         serviceFeePercentage: parseFloat(result[0].serviceFeePercentage as string),
+        direction: result[0].direction,
     };
 
     return estimate;
@@ -156,6 +157,7 @@ export async function getContract<T extends SwapAsset>(asset: T, address: string
         from: convertFromData(result.info.from[0]),
         to: convertToData(result.info.to[0]),
         serviceFeePercentage: parseFloat(result.info.serviceFeePercentage as string),
+        direction: result.info.direction,
     };
 }
 

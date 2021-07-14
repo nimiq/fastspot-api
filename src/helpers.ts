@@ -114,6 +114,7 @@ export function convertSwap(swap: FastspotPreSwap | FastspotSwap): PreSwap | Swa
         to: convertToData(outputObject),
         status: swap.status,
         serviceFeePercentage: parseFloat(swap.info.serviceFeePercentage as string),
+        direction: swap.info.direction,
     };
 
     if ('contracts' in swap) {

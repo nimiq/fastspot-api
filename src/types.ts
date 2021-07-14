@@ -184,6 +184,7 @@ export type Estimate = {
     from: PriceData,
     to: PriceData,
     serviceFeePercentage: number,
+    direction: 'forward' | 'reverse',
 };
 
 export type NimHtlcDetails = {

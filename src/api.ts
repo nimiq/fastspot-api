@@ -115,7 +115,7 @@ export async function confirmSwap(
         x: string,
         y?: string,
     },
-    refund: {
+    refund?: {
         asset: SwapAsset.NIM | SwapAsset.BTC,
         address: string,
     } | {
@@ -133,7 +133,7 @@ export async function confirmSwap(
                 ...(redeem.y ? { y: redeem.y } : {}),
             } }
             : { [redeem.asset]: redeem.address },
-        refund: { [refund.asset]: 'address' in refund ? refund.address : '' },
+        ...(refund ? { refund: { [refund.asset]: 'address' in refund ? refund.address : '' } } : {}),
         ...(uid ? { uid } : {}),
     }) as FastspotSwap;
 

@@ -15,6 +15,25 @@ export const Precision = {
     [ReferenceAsset.USD]: 2,
 } as const;
 
+export enum SwapStatus {
+    WAITING_FOR_CONFIRMATION = 'waiting-for-confirmation',
+    WAITING_FOR_TRANSACTIONS = 'waiting-for-transactions',
+    WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
+    FINISHED = 'finished',
+    EXPIRED_PENDING_CONFIRMATIONS = 'expired-pending-confirmation',
+    EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
+    CANCELLED = 'cancelled',
+    INVALID = 'invalid',
+}
+
+export enum ContractStatus {
+    PENDING = 'pending',
+    FUNDED = 'funded',
+    TIMEOUT_REACHED = 'timeout-reached',
+    REFUNDED = 'refunded',
+    REDEEMED = 'redeemed',
+}
+
 // Internal Types
 
 export type FastspotAsset = {
@@ -74,7 +93,7 @@ export type FastspotContract<T extends SwapAsset> = {
     amount: number,
     timeout: number,
     direction: 'send' | 'receive',
-    status: string,
+    status: ContractStatus,
     id: string,
     intermediary: T extends SwapAsset.NIM ? {
         address: string,
@@ -96,7 +115,7 @@ export type FastspotContractWithEstimate<T extends SwapAsset> = {
 
 export type FastspotPreSwap = {
     id: string,
-    status: string,
+    status: SwapStatus,
     expires: number,
     info: FastspotEstimate,
 };
@@ -211,7 +230,7 @@ export type Contract<T extends SwapAsset> = {
     amount: number,
     timeout: number,
     direction: 'send' | 'receive',
-    status: string,
+    status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
@@ -225,7 +244,7 @@ export type ContractWithEstimate<T extends SwapAsset> = Estimate & {
 export type PreSwap = Estimate & {
     id: string,
     expires: number,
-    status: string,
+    status: SwapStatus,
 };
 
 export type Swap = PreSwap & {

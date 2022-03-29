@@ -32,14 +32,21 @@ import {
 
 let API_URL: string | undefined;
 let API_KEY: string | undefined;
+let REFERRAL: { partnerCode: string, refCode: string } | undefined;
 
-export function init(url: string, key: string) {
+export function init(url: string, key: string, referral?: { partnerCode: string, refCode: string }) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
+    REFERRAL = referral;
 }
 
-async function api(path: string, method: 'POST' | 'GET' | 'DELETE', body?: object): Promise<FastspotResult> {
+async function api(
+    path: string,
+    method: 'POST' | 'GET' | 'DELETE',
+    body?: object,
+    headers?: Record<string, string>,
+): Promise<FastspotResult> {
     if (!API_URL || !API_KEY) throw new Error('API URL and key not set, call init() first');
 
     const response = await fetch(`${API_URL}${path}`, {
@@ -47,6 +54,7 @@ async function api(path: string, method: 'POST' | 'GET' | 'DELETE', body?: objec
         headers: {
             'Content-Type': 'application/json',
             'X-FAST-ApiKey': API_KEY,
+            ...headers,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
     });
@@ -98,7 +106,10 @@ export async function createSwap(
         from,
         to,
         includedFees: 'required',
-    }) as FastspotPreSwap;
+    }, REFERRAL ? {
+        'X-S3-Partner-Code': REFERRAL.partnerCode,
+        'X-S3-Ref-Code': REFERRAL.refCode,
+    } : undefined) as FastspotPreSwap;
 
     return convertSwap(result);
 }

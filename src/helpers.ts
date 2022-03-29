@@ -34,7 +34,7 @@ export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | 
 }
 
 export function convertFromData(from: FastspotPrice): PriceData {
-    const asset = SwapAsset[from.symbol];
+    const asset = from.symbol;
     return {
         asset,
         amount: coinsToUnits(asset, from.amount),
@@ -48,7 +48,7 @@ export function convertFromData(from: FastspotPrice): PriceData {
 }
 
 export function convertToData(to: FastspotPrice): PriceData {
-    const asset = SwapAsset[to.symbol];
+    const asset = to.symbol;
     return {
         asset,
         amount: coinsToUnits(asset, to.amount),

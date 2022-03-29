@@ -66,7 +66,7 @@ export type FastspotFee = {
 };
 
 export type FastspotPrice = {
-    symbol: 'NIM' | 'BTC',
+    symbol: SwapAsset,
     name: string,
     amount: string,
     fundingNetworkFee: FastspotFee,

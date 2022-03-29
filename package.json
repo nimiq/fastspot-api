@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/fastspot-api",
-  "version": "1.5.6",
+  "version": "1.6.0",
   "description": "Typescript library to interact with the Fastspot API",
   "repository": "git@github.com:nimiq/fastspot-api.git",
   "author": "sisou <hello@soerenschwert.de>",

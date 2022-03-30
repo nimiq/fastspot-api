@@ -204,7 +204,7 @@ export async function getAssets(): Promise<AssetList> {
                         : Infinity,
                 },
             };
-        } catch (error) {
+        } catch (error: any) {
             console.warn(error.message, record); // eslint-disable-line no-console
         }
     }

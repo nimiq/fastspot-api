@@ -8,6 +8,11 @@ export enum ReferenceAsset {
     USD = 'USD',
 }
 
+export type ReferralCodes = {
+    partnerCode: string,
+    refCode?: string,
+};
+
 export const Precision = {
     [SwapAsset.NIM]: 5,
     [SwapAsset.BTC]: 8,

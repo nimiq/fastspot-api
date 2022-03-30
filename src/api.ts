@@ -17,6 +17,7 @@ import {
     Limits,
     UserLimits,
     AssetList,
+    ReferralCodes,
 } from './types';
 
 import {
@@ -32,9 +33,9 @@ import {
 
 let API_URL: string | undefined;
 let API_KEY: string | undefined;
-let REFERRAL: { partnerCode: string, refCode: string } | undefined;
+let REFERRAL: ReferralCodes | undefined;
 
-export function init(url: string, key: string, referral?: { partnerCode: string, refCode: string }) {
+export function init(url: string, key: string, referral?: ReferralCodes) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
@@ -102,14 +103,17 @@ export async function createSwap(
 ): Promise<PreSwap> {
     validateRequestPairs(from, to);
 
+    const headers: Record<string, string> = {};
+    if (REFERRAL) {
+        headers['X-S3-Partner-Code'] = REFERRAL.partnerCode;
+        if (REFERRAL.refCode) headers['X-S3-Ref-Code'] = REFERRAL.refCode;
+    }
+
     const result = await api('/swaps', 'POST', {
         from,
         to,
         includedFees: 'required',
-    }, REFERRAL ? {
-        'X-S3-Partner-Code': REFERRAL.partnerCode,
-        'X-S3-Ref-Code': REFERRAL.refCode,
-    } : undefined) as FastspotPreSwap;
+    }, headers) as FastspotPreSwap;
 
     return convertSwap(result);
 }

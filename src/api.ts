@@ -185,13 +185,21 @@ export async function getContract<T extends SwapAsset>(asset: T, address: string
     };
 }
 
-export async function getLimits<T extends SwapAsset>(asset: T, address: string): Promise<Limits<T>> {
-    const result = await api(`/limits/${asset}/${address}`, 'GET') as FastspotLimits<T>;
+export async function getLimits<T extends SwapAsset>(asset: T, address: string, kycUid?: string): Promise<Limits<T>> {
+    const headers: Record<string, string> = {};
+    if (kycUid) {
+        headers['X-S3-KYC-UID'] = kycUid;
+    }
+    const result = await api(`/limits/${asset}/${address}`, 'GET', { headers }) as FastspotLimits<T>;
     return convertLimits(result);
 }
 
-export async function getUserLimits(uid: string): Promise<UserLimits> {
-    const result = await api(`/limits/${uid}`, 'GET') as FastspotUserLimits;
+export async function getUserLimits(uid: string, kycUid?: string): Promise<UserLimits> {
+    const headers: Record<string, string> = {};
+    if (kycUid) {
+        headers['X-S3-KYC-UID'] = kycUid;
+    }
+    const result = await api(`/limits/${uid}`, 'GET', { headers }) as FastspotUserLimits;
     return convertUserLimits(result);
 }
 

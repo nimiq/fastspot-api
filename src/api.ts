@@ -45,8 +45,10 @@ export function init(url: string, key: string, referral?: ReferralCodes) {
 async function api(
     path: string,
     method: 'POST' | 'GET' | 'DELETE',
-    body?: object,
-    headers?: Record<string, string>,
+    options?: {
+        headers?: Record<string, string>,
+        body?: object,
+    }
 ): Promise<FastspotResult> {
     if (!API_URL || !API_KEY) throw new Error('API URL and key not set, call init() first');
 
@@ -55,9 +57,9 @@ async function api(
         headers: {
             'Content-Type': 'application/json',
             'X-FAST-ApiKey': API_KEY,
-            ...headers,
+            ...options?.headers,
         },
-        ...(body ? { body: JSON.stringify(body) } : {}),
+        ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
     });
 
     if (!response.ok) {
@@ -76,9 +78,11 @@ export async function getEstimate(
     validateRequestPairs(from, to);
 
     const result = await api('/estimates', 'POST', {
-        from,
-        to,
-        includedFees: 'required',
+        body: {
+            from,
+            to,
+            includedFees: 'required',
+        },
     }) as FastspotEstimate[];
 
     const inputObject = result[0].from[0];
@@ -110,10 +114,13 @@ export async function createSwap(
     }
 
     const result = await api('/swaps', 'POST', {
-        from,
-        to,
-        includedFees: 'required',
-    }, headers) as FastspotPreSwap;
+        headers,
+        body: {
+            from,
+            to,
+            includedFees: 'required',
+        },
+    }) as FastspotPreSwap;
 
     return convertSwap(result);
 }
@@ -139,17 +146,19 @@ export async function confirmSwap(
     uid?: string,
 ): Promise<Swap> {
     const result = await api(`/swaps/${swap.id}`, 'POST', {
-        confirm: true,
-        beneficiary: redeem.asset === SwapAsset.EUR
-            ? { [redeem.asset]: {
-                kty: redeem.kty,
-                crv: redeem.crv,
-                x: redeem.x,
-                ...(redeem.y ? { y: redeem.y } : {}),
-            } }
-            : { [redeem.asset]: redeem.address },
-        ...(refund ? { refund: { [refund.asset]: 'address' in refund ? refund.address : '' } } : {}),
-        ...(uid ? { uid } : {}),
+        body: {
+            confirm: true,
+            beneficiary: redeem.asset === SwapAsset.EUR
+                ? { [redeem.asset]: {
+                    kty: redeem.kty,
+                    crv: redeem.crv,
+                    x: redeem.x,
+                    ...(redeem.y ? { y: redeem.y } : {}),
+                } }
+                : { [redeem.asset]: redeem.address },
+            ...(refund ? { refund: { [refund.asset]: 'address' in refund ? refund.address : '' } } : {}),
+            ...(uid ? { uid } : {}),
+        },
     }) as FastspotSwap;
 
     return convertSwap(result);

@@ -144,8 +144,17 @@ export async function confirmSwap(
         asset: SwapAsset.EUR,
     },
     uid?: string,
+    kycToken?: string,
 ): Promise<Swap> {
+    const headers: Record<string, string> = {};
+    if (kycToken) {
+        if (!uid) throw new Error('UID is required when using kycToken');
+        headers['X-S3-KYC-Token'] = kycToken;
+        headers['X-S3-KYC-UID'] = uid;
+    }
+
     const result = await api(`/swaps/${swap.id}`, 'POST', {
+        headers,
         body: {
             confirm: true,
             beneficiary: redeem.asset === SwapAsset.EUR

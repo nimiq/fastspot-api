@@ -145,12 +145,16 @@ export async function confirmSwap(
     },
     uid?: string,
     kycToken?: string,
+    oasisPrepareToken?: string,
 ): Promise<Swap> {
     const headers: Record<string, string> = {};
     if (kycToken) {
         if (!uid) throw new Error('UID is required when using kycToken');
         headers['X-S3-KYC-Token'] = kycToken;
         headers['X-S3-KYC-UID'] = uid;
+        if (oasisPrepareToken) {
+            headers['X-OASIS-Prepare-Token'] = oasisPrepareToken;
+        }
     }
 
     const result = await api(`/swaps/${swap.id}`, 'POST', {

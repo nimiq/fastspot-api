@@ -74,7 +74,7 @@ export function createSwap(from, to) {
         return convertSwap(result);
     });
 }
-export function confirmSwap(swap, redeem, refund, uid, kycToken) {
+export function confirmSwap(swap, redeem, refund, uid, kycToken, oasisPrepareToken) {
     return __awaiter(this, void 0, void 0, function* () {
         const headers = {};
         if (kycToken) {
@@ -82,6 +82,9 @@ export function confirmSwap(swap, redeem, refund, uid, kycToken) {
                 throw new Error('UID is required when using kycToken');
             headers['X-S3-KYC-Token'] = kycToken;
             headers['X-S3-KYC-UID'] = uid;
+            if (oasisPrepareToken) {
+                headers['X-OASIS-Prepare-Token'] = oasisPrepareToken;
+            }
         }
         const result = yield api(`/swaps/${swap.id}`, 'POST', {
             headers,

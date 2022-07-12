@@ -18,7 +18,7 @@ export declare function confirmSwap(swap: PreSwap, redeem: {
     address: string;
 } | {
     asset: SwapAsset.EUR;
-}, uid?: string, kycToken?: string): Promise<Swap>;
+}, uid?: string, kycToken?: string, oasisPrepareToken?: string): Promise<Swap>;
 export declare function getSwap(id: string): Promise<PreSwap | Swap>;
 export declare function cancelSwap(swap: PreSwap): Promise<PreSwap>;
 export declare function getContract<T extends SwapAsset>(asset: T, address: string): Promise<ContractWithEstimate<T>>;

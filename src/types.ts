@@ -1,6 +1,7 @@
 export enum SwapAsset {
     NIM = 'NIM',
     BTC = 'BTC',
+    USDC = 'USDC',
     EUR = 'EUR',
 }
 
@@ -16,6 +17,7 @@ export type ReferralCodes = {
 export const Precision = {
     [SwapAsset.NIM]: 5,
     [SwapAsset.BTC]: 8,
+    [SwapAsset.USDC]: 6,
     [SwapAsset.EUR]: 2,
     [ReferenceAsset.USD]: 2,
 } as const;
@@ -182,8 +184,8 @@ export type Asset = {
     name: string,
     feePerUnit: number,
     limits: {
-        minimum: number,
-        maximum: number,
+        minimum?: number,
+        maximum?: number,
     },
 };
 

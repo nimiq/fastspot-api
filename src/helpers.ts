@@ -18,15 +18,22 @@ import {
     HtlcDetails,
 } from './types';
 
-export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, roundUp = false): number {
-    let decimals = Precision[asset];
+export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, options: Partial<{
+    roundUp: boolean,
+    treatUsdcAsMatic: boolean,
+}> = {}): number {
+    let decimals = Precision[asset] as number;
+
+    // Some fees for USDC are provided in MATIC, and must be converted accordingly
+    if (asset === SwapAsset.USDC && options.treatUsdcAsMatic) decimals = 18
+
     if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
 
     const parts = value.toString().split('.');
-    parts[1] = (parts[1] || '').substr(0, decimals + 1).padEnd(decimals + 1, '0');
+    parts[1] = (parts[1] || '').substring(0, decimals + 1).padEnd(decimals + 1, '0');
     const units = parseInt(parts.join(''), 10) / 10;
 
-    if (roundUp) {
+    if (options.roundUp) {
         return Math.ceil(units);
     }
 
@@ -38,12 +45,12 @@ export function convertFromData(from: FastspotPrice): PriceData {
     return {
         asset,
         amount: coinsToUnits(asset, from.amount),
-        fee: coinsToUnits(asset, from.fundingNetworkFee.total, true),
+        fee: coinsToUnits(asset, from.fundingNetworkFee.total, { roundUp: true }),
         ...(from.fundingNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, true),
+            feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
         }: {}),
-        serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, true),
-        serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, true),
+        serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, { roundUp: true }),
+        serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, { roundUp: true }),
     };
 }
 
@@ -52,12 +59,12 @@ export function convertToData(to: FastspotPrice): PriceData {
     return {
         asset,
         amount: coinsToUnits(asset, to.amount),
-        fee: coinsToUnits(asset, to.finalizeNetworkFee.total, true),
+        fee: coinsToUnits(asset, to.finalizeNetworkFee.total, { roundUp: true }),
         ...(to.finalizeNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, true),
+            feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
         }: {}),
-        serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, true),
-        serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, true),
+        serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, { roundUp: true }),
+        serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, { roundUp: true }),
     };
 }
 

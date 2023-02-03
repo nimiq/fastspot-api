@@ -224,14 +224,14 @@ export async function getAssets(): Promise<AssetList> {
             records[record.symbol] = {
                 asset: record.symbol,
                 name: record.name,
-                feePerUnit: coinsToUnits(record.symbol, record.feePerUnit),
+                feePerUnit: coinsToUnits(record.symbol, record.feePerUnit, { treatUsdcAsMatic: true }),
                 limits: {
                     minimum: record.limits && record.limits.minimum
                         ? coinsToUnits(record.symbol, record.limits.minimum)
-                        : 0,
+                        : undefined,
                     maximum: record.limits && record.limits.maximum
                         ? coinsToUnits(record.symbol, record.limits.maximum)
-                        : Infinity,
+                        : undefined,
                 },
             };
         } catch (error: any) {

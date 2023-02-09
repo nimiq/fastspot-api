@@ -102,6 +102,9 @@ export declare type FastspotContract<T extends SwapAsset> = {
         p2sh: string;
         p2wsh: string;
         scriptBytes: string;
+    } : T extends SwapAsset.USDC ? {
+        address: string;
+        data?: string;
     } : T extends SwapAsset.EUR ? {
         contractId?: string;
     } : never;
@@ -196,7 +199,12 @@ export declare type BtcHtlcDetails = {
 export declare type EurHtlcDetails = {
     address: string;
 };
-export declare type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | EurHtlcDetails;
+export declare type UsdcHtlcDetails = {
+    address: string;
+    contract: string;
+    data?: string;
+};
+export declare type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
 export declare type Contract<T extends SwapAsset> = {
     asset: T;
     refundAddress: string;
@@ -205,7 +213,7 @@ export declare type Contract<T extends SwapAsset> = {
     timeout: number;
     direction: 'send' | 'receive';
     status: ContractStatus;
-    htlc: T extends SwapAsset.NIM ? NimHtlcDetails : T extends SwapAsset.BTC ? BtcHtlcDetails : T extends SwapAsset.EUR ? EurHtlcDetails : never;
+    htlc: T extends SwapAsset.NIM ? NimHtlcDetails : T extends SwapAsset.BTC ? BtcHtlcDetails : T extends SwapAsset.USDC ? UsdcHtlcDetails : T extends SwapAsset.EUR ? EurHtlcDetails : never;
 };
 export declare type ContractWithEstimate<T extends SwapAsset> = Estimate & {
     contract: Contract<T>;

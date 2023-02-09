@@ -31,16 +31,19 @@ export function convertContract(contract) {
     let htlc;
     switch (contract.asset) {
         case SwapAsset.NIM:
-            htlc = {
-                address: contract.intermediary.address,
-                timeoutBlock: contract.intermediary.timeoutBlock,
-                data: contract.intermediary.data,
-            };
+            htlc = Object.assign({}, contract.intermediary);
             break;
         case SwapAsset.BTC:
             htlc = {
                 address: contract.intermediary.p2wsh,
                 script: contract.intermediary.scriptBytes,
+            };
+            break;
+        case SwapAsset.USDC:
+            htlc = {
+                address: contract.id.substring(0, 2) === '0x' ? contract.id : `0x${contract.id}`,
+                contract: contract.intermediary.address,
+                data: contract.intermediary.data,
             };
             break;
         case SwapAsset.EUR:

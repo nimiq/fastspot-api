@@ -5,7 +5,7 @@ export declare function getEstimate(from: SwapAsset, to: RequestAsset<SwapAsset>
 export declare function createSwap(from: RequestAsset<SwapAsset>, to: SwapAsset): Promise<PreSwap>;
 export declare function createSwap(from: SwapAsset, to: RequestAsset<SwapAsset>): Promise<PreSwap>;
 export declare function confirmSwap(swap: PreSwap, redeem: {
-    asset: SwapAsset.NIM | SwapAsset.BTC;
+    asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC;
     address: string;
 } | {
     asset: SwapAsset.EUR;
@@ -14,7 +14,7 @@ export declare function confirmSwap(swap: PreSwap, redeem: {
     x: string;
     y?: string;
 }, refund?: {
-    asset: SwapAsset.NIM | SwapAsset.BTC;
+    asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC;
     address: string;
 } | {
     asset: SwapAsset.EUR;

@@ -112,6 +112,9 @@ export type FastspotContract<T extends SwapAsset> = {
         p2sh: string,
         p2wsh: string,
         scriptBytes: string,
+    } : T extends SwapAsset.USDC ? {
+        address: string,
+        data?: string, // Only provided for 'send' direction
     } : T extends SwapAsset.EUR ? {
         contractId?: string,
     } : never,
@@ -230,7 +233,13 @@ export type EurHtlcDetails = {
     address: string,
 };
 
-export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | EurHtlcDetails;
+export type UsdcHtlcDetails = {
+    address: string,
+    contract: string,
+    data?: string,
+};
+
+export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
 
 export type Contract<T extends SwapAsset> = {
     asset: T,
@@ -242,6 +251,7 @@ export type Contract<T extends SwapAsset> = {
     status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
+        : T extends SwapAsset.USDC ? UsdcHtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
         : never,
 };

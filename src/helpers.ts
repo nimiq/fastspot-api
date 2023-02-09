@@ -74,15 +74,20 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
     switch (contract.asset) {
         case SwapAsset.NIM:
             htlc = {
-                address: (contract as FastspotContract<SwapAsset.NIM>).intermediary.address,
-                timeoutBlock: (contract as FastspotContract<SwapAsset.NIM>).intermediary.timeoutBlock,
-                data: (contract as FastspotContract<SwapAsset.NIM>).intermediary.data,
+                ...(contract as FastspotContract<SwapAsset.NIM>).intermediary,
             };
             break;
         case SwapAsset.BTC:
             htlc = {
                 address: (contract as FastspotContract<SwapAsset.BTC>).intermediary.p2wsh,
                 script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
+            };
+            break;
+        case SwapAsset.USDC:
+            htlc = {
+                address: contract.id.substring(0, 2) === '0x' ? contract.id : `0x${contract.id}`,
+                contract: (contract as FastspotContract<SwapAsset.USDC>).intermediary.address,
+                data: (contract as FastspotContract<SwapAsset.USDC>).intermediary.data,
             };
             break;
         case SwapAsset.EUR:
@@ -99,7 +104,7 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
         refundAddress: contract.refund?.address || '',
         redeemAddress: contract.asset === SwapAsset.EUR
             ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
-            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC>).recipient.address,
+            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC>).recipient.address,
         amount: coinsToUnits(contract.asset, contract.amount),
         timeout: contract.timeout,
         direction: contract.direction,

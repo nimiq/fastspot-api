@@ -2,6 +2,7 @@ export enum SwapAsset {
     NIM = 'NIM',
     BTC = 'BTC',
     USDC = 'USDC',
+    USDC_MATIC = 'USDC_MATIC',
     EUR = 'EUR',
 }
 
@@ -18,6 +19,7 @@ export const Precision = {
     [SwapAsset.NIM]: 5,
     [SwapAsset.BTC]: 8,
     [SwapAsset.USDC]: 6,
+    [SwapAsset.USDC_MATIC]: 6,
     [SwapAsset.EUR]: 2,
     [ReferenceAsset.USD]: 2,
 } as const;
@@ -112,7 +114,7 @@ export type FastspotContract<T extends SwapAsset> = {
         p2sh: string,
         p2wsh: string,
         scriptBytes: string,
-    } : T extends SwapAsset.USDC ? {
+    } : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? {
         address: string,
         data?: string, // Only provided for 'send' direction
     } : T extends SwapAsset.EUR ? {
@@ -251,7 +253,7 @@ export type Contract<T extends SwapAsset> = {
     status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
-        : T extends SwapAsset.USDC ? UsdcHtlcDetails
+        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
         : never,
 };

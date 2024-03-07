@@ -136,6 +136,8 @@ export async function confirmSwap(
         crv: string,
         x: string,
         y?: string,
+    } | {
+        asset: SwapAsset.BTC_LN,
     },
     refund?: {
         asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
@@ -168,7 +170,9 @@ export async function confirmSwap(
                     x: redeem.x,
                     ...(redeem.y ? { y: redeem.y } : {}),
                 } }
-                : { [redeem.asset]: redeem.address },
+                : redeem.asset === SwapAsset.BTC_LN
+                    ? {}
+                    : { [redeem.asset]: redeem.address },
             ...(refund ? { refund: { [refund.asset]: 'address' in refund ? refund.address : '' } } : {}),
             ...(uid ? { uid } : {}),
         },

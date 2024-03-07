@@ -83,6 +83,11 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
                 script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
             };
             break;
+        case SwapAsset.BTC_LN:
+            htlc = {
+                nodeId: (contract as FastspotContract<SwapAsset.BTC_LN>).intermediary.nodeId,
+            };
+            break;
         case SwapAsset.USDC:
         case SwapAsset.USDC_MATIC:
             htlc = {

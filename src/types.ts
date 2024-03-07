@@ -1,6 +1,7 @@
 export enum SwapAsset {
     NIM = 'NIM',
     BTC = 'BTC',
+    BTC_LN = 'BTC_LN',
     USDC = 'USDC',
     USDC_MATIC = 'USDC_MATIC',
     EUR = 'EUR',
@@ -18,6 +19,7 @@ export type ReferralCodes = {
 export const Precision = {
     [SwapAsset.NIM]: 5,
     [SwapAsset.BTC]: 8,
+    [SwapAsset.BTC_LN]: 11,
     [SwapAsset.USDC]: 6,
     [SwapAsset.USDC_MATIC]: 6,
     [SwapAsset.EUR]: 2,
@@ -92,7 +94,7 @@ export type FastspotEstimate = {
 
 export type FastspotContract<T extends SwapAsset> = {
     asset: T,
-    refund?: { address: string },
+    refund?: { address: string } | null,
     recipient: T extends SwapAsset.EUR ? {
         kty: string,
         crv: string,
@@ -114,6 +116,11 @@ export type FastspotContract<T extends SwapAsset> = {
         p2sh: string,
         p2wsh: string,
         scriptBytes: string,
+    } : T extends SwapAsset.BTC_LN ? {
+        nodeId: string,
+        amount: string,
+        hash: string,
+        request: string,
     } : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? {
         address: string,
         data?: string, // Only provided for 'send' direction
@@ -231,6 +238,10 @@ export type BtcHtlcDetails = {
     script: string,
 };
 
+export type BtcLnHtlcDetails = {
+    nodeId: string,
+};
+
 export type EurHtlcDetails = {
     address: string,
 };
@@ -241,7 +252,7 @@ export type UsdcHtlcDetails = {
     data?: string,
 };
 
-export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
+export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | BtcLnHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
 
 export type Contract<T extends SwapAsset> = {
     asset: T,
@@ -253,6 +264,7 @@ export type Contract<T extends SwapAsset> = {
     status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
+        : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
         : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
         : never,

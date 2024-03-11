@@ -19,7 +19,6 @@ export enum AssetId {
     BTC = 'BTC',
     BTC_LN = 'BTC_LN',
     USDC_MATIC = 'USDC_MATIC',
-    USDC_e_MATIC = 'USDC_e_MATIC',
     EUR = 'EUR',
 }
 
@@ -31,6 +30,14 @@ export enum ReferenceAsset {
 //     partnerCode: string,
 //     refCode?: string,
 // };
+
+export const Precision = {
+    [Ticker.NIM]: 5,
+    [Ticker.BTC]: 8,
+    [Ticker.USDC]: 6,
+    [Ticker.EUR]: 2,
+    [ReferenceAsset.USD]: 2,
+} as const;
 
 export enum SwapStatus {
     PENDING_CONFIRMATION = 'PENDING_CONFIRMATION',
@@ -98,6 +105,8 @@ enum FastspotFeeSource {
 
 enum FastspotFeeType {
     DEPOSIT_TRANSACTION = 'DEPOSIT_TRANSACTION',
+    REDEMPTION_TRANSACTION = 'REDEMPTION_TRANSACTION',
+    REFUND_TRANSACTION = 'REFUND_TRANSACTION',
     EXECUTION = 'EXECUTION',
 }
 
@@ -164,7 +173,7 @@ export type FastspotFee = {
 //     info: FastspotEstimate,
 // };
 
-export type FastspotPreSwap = {
+export type FastspotQuote = {
     id: string,
     status: SwapStatus,
     sell: {
@@ -179,7 +188,7 @@ export type FastspotPreSwap = {
     expiry: number,
 };
 
-// export type FastspotSwap = FastspotPreSwap & {
+// export type FastspotSwap = FastspotQuote & {
 //     hash: string,
 //     secret?: string,
 //     contracts: FastspotContract<SwapAsset>[],
@@ -215,7 +224,7 @@ export type FastspotPreSwap = {
 export type FastspotResult
     = FastspotAsset[]
     // | FastspotEstimate[]
-    | FastspotPreSwap;
+    | FastspotQuote;
     // | FastspotSwap
     // | FastspotContractWithEstimate<SwapAsset>
     // | FastspotLimits<SwapAsset>
@@ -242,22 +251,27 @@ export type FastspotError = {
 
 // export type AssetList = {[asset in SwapAsset]: Asset};
 
-// // export type RequestAsset = Partial<Record<SwapAsset, number>>;
-// export type RequestAsset<K extends SwapAsset> = {
-//     [P in K]: (Record<P, number> &
-//         Partial<Record<Exclude<K, P>, never>>) extends infer O
-//             ? { [Q in keyof O]: O[Q] }
-//             : never
-// }[K];
+export type RequestAsset<A extends AssetId> = {
+    asset: A,
+} & (A extends AssetId.BTC_LN ? {
+    peer: string, // For BTC_LN, peer is required
+} : {
+    peer?: string,
+});
 
-// export type PriceData = {
-//     asset: SwapAsset,
-//     amount: number,
-//     fee: number,
-//     feePerUnit?: number,
-//     serviceNetworkFee: number,
-//     serviceEscrowFee: number,
-// };
+export type RequestAssetWithAmount<A extends AssetId> = RequestAsset<A> & {
+    amount: string | number,
+};
+
+export type Fee = {
+    asset: Ticker,
+    network: string,
+    amount: number,
+    included: boolean,
+    source: FastspotFeeSource,
+    type: FastspotFeeType,
+    reason?: string,
+};
 
 // export type Estimate = {
 //     from: PriceData,
@@ -308,11 +322,20 @@ export type FastspotError = {
 //     contract: Contract<T>,
 // };
 
-// export type PreSwap = Estimate & {
-//     id: string,
-//     expires: number,
-//     status: SwapStatus,
-// };
+export type Quote = {
+    id: string,
+    status: SwapStatus,
+    sell: {
+        asset: AssetId,
+        amount: number,
+    },
+    buy: {
+        asset: AssetId,
+        amount: number,
+    },
+    fees: Fee[],
+    expiry: number,
+};
 
 // export type Swap = PreSwap & {
 //     hash: string,

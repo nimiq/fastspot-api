@@ -1,0 +1,28 @@
+meta {
+  name: Create Swap
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{API_DOMAIN}}/swap/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "sell": [
+      {
+        "asset": "NIM"
+      }
+    ],
+    "buy": [
+      {
+        "asset": "BTC_LN",
+        "peer": "lntb20u1pj7j27tpp5jtfw56wsd5qcd93ksu7yqsnrutsqzj7lvxplrlx4g574vfv0tk7sdqqcqzzsxqyz5vqsp5jcp4xdrgpvq9hp768fxw3cdhsxjswxdvlspzntnh8sm8vec4hqrq9qyyssqwvjckr0ds4spflk28dh5z6kftcv7xkt9fh0vwe5c2ezjr5x7e758lauuvvumcfkcaqhtvs5rfvw8mslggv0854uzqrmr0727kqp6elspufhqwj",
+        "amount": 0.00002
+      }
+    ]
+  }
+}

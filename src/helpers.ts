@@ -1,226 +1,202 @@
 import {
     RequestAsset,
-    SwapAsset,
+    RequestAssetWithAmount,
+    AssetId,
+    Ticker,
     ReferenceAsset,
     Precision,
-    PriceData,
-    FastspotPrice,
-    FastspotContract,
-    FastspotPreSwap,
-    FastspotSwap,
-    FastspotLimits,
-    FastspotUserLimits,
-    Contract,
-    PreSwap,
-    Swap,
-    Limits,
-    UserLimits,
-    HtlcDetails,
+    // PriceData,
+    // FastspotPrice,
+    // FastspotContract,
+    FastspotQuote,
+    // FastspotSwap,
+    // FastspotLimits,
+    // FastspotUserLimits,
+    // Contract,
+    Quote,
+    // Swap,
+    // Limits,
+    // UserLimits,
+    // HtlcDetails,
 } from './types';
 
-export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, options: Partial<{
-    roundUp: boolean,
-    treatUsdcAsMatic: boolean,
-}> = {}): number {
-    let decimals = Precision[asset] as number;
-
-    // Some fees for USDC are provided in MATIC, and must be converted accordingly
-    if ((asset === SwapAsset.USDC || asset === SwapAsset.USDC_MATIC) && options.treatUsdcAsMatic) decimals = 18
-
+export function coinsToUnits(asset: Ticker | ReferenceAsset, value: string | number): number {
+    let decimals: number = Precision[asset];
     if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
 
-    const parts = value.toString().split('.');
-    parts[1] = (parts[1] || '').substring(0, decimals + 1).padEnd(decimals + 1, '0');
-    const units = parseInt(parts.join(''), 10) / 10;
-
-    if (options.roundUp) {
-        return Math.ceil(units);
+    if (typeof value === 'number') {
+        return value * Math.pow(10, decimals);
     }
 
-    return Math.floor(units);
+    // Move the decimal point before parsing to number, to reduce inaccuracy due to floating point precision
+    const [coins, units] = value.split('.');
+    value = `${coins}${units.substring(0, decimals).padEnd(decimals, '0')}.${units.substring(decimals)}`;
+    return parseFloat(value);
 }
 
-export function convertFromData(from: FastspotPrice): PriceData {
-    const asset = from.symbol;
+function assetToTicker(asset: AssetId): Ticker {
+    switch (asset) {
+        case AssetId.NIM: return Ticker.NIM;
+        case AssetId.BTC: return Ticker.BTC;
+        case AssetId.BTC_LN: return Ticker.BTC;
+        case AssetId.USDC_MATIC: return Ticker.USDC;
+        case AssetId.EUR: return Ticker.EUR;
+    }
+}
+
+export function convertSellBuyData(data: { asset: AssetId, amount: string }): { asset: AssetId, amount: number } {
+    const asset = data.asset;
     return {
         asset,
-        amount: coinsToUnits(asset, from.amount),
-        fee: coinsToUnits(asset, from.fundingNetworkFee.total, { roundUp: true }),
-        ...(from.fundingNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        }: {}),
-        serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, { roundUp: true }),
-        serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, { roundUp: true }),
+        amount: coinsToUnits(assetToTicker(asset), data.amount),
     };
 }
 
-export function convertToData(to: FastspotPrice): PriceData {
-    const asset = to.symbol;
-    return {
-        asset,
-        amount: coinsToUnits(asset, to.amount),
-        fee: coinsToUnits(asset, to.finalizeNetworkFee.total, { roundUp: true }),
-        ...(to.finalizeNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        }: {}),
-        serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, { roundUp: true }),
-        serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, { roundUp: true }),
-    };
-}
+// export function convertContract<T extends SwapAsset>(contract: FastspotContract<T>): Contract<T> {
+//     let htlc: HtlcDetails;
 
-export function convertContract<T extends SwapAsset>(contract: FastspotContract<T>): Contract<T> {
-    let htlc: HtlcDetails;
+//     switch (contract.asset) {
+//         case SwapAsset.NIM:
+//             htlc = {
+//                 ...(contract as FastspotContract<SwapAsset.NIM>).intermediary,
+//             };
+//             break;
+//         case SwapAsset.BTC:
+//             htlc = {
+//                 address: (contract as FastspotContract<SwapAsset.BTC>).intermediary.p2wsh,
+//                 script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
+//             };
+//             break;
+//         case SwapAsset.USDC:
+//         case SwapAsset.USDC_MATIC:
+//             htlc = {
+//                 address: contract.id.substring(0, 2) === '0x' ? contract.id : `0x${contract.id}`,
+//                 contract: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC>).intermediary.address,
+//                 data: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC>).intermediary.data,
+//             };
+//             break;
+//         case SwapAsset.EUR:
+//             htlc = {
+//                 address: (contract as FastspotContract<SwapAsset.EUR>).intermediary.contractId || contract.id,
+//                 // TODO: Parse clearing instructions if provided
+//             };
+//             break;
+//         default: throw new Error(`Invalid asset ${contract.asset}`);
+//     }
 
-    switch (contract.asset) {
-        case SwapAsset.NIM:
-            htlc = {
-                ...(contract as FastspotContract<SwapAsset.NIM>).intermediary,
-            };
-            break;
-        case SwapAsset.BTC:
-            htlc = {
-                address: (contract as FastspotContract<SwapAsset.BTC>).intermediary.p2wsh,
-                script: (contract as FastspotContract<SwapAsset.BTC>).intermediary.scriptBytes,
-            };
-            break;
-        case SwapAsset.USDC:
-        case SwapAsset.USDC_MATIC:
-            htlc = {
-                address: contract.id.substring(0, 2) === '0x' ? contract.id : `0x${contract.id}`,
-                contract: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC>).intermediary.address,
-                data: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC>).intermediary.data,
-            };
-            break;
-        case SwapAsset.EUR:
-            htlc = {
-                address: (contract as FastspotContract<SwapAsset.EUR>).intermediary.contractId || contract.id,
-                // TODO: Parse clearing instructions if provided
-            };
-            break;
-        default: throw new Error(`Invalid asset ${contract.asset}`);
-    }
+//     return {
+//         asset: contract.asset,
+//         refundAddress: contract.refund?.address || '',
+//         redeemAddress: contract.asset === SwapAsset.EUR
+//             ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
+//             : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC>).recipient.address,
+//         amount: coinsToUnits(contract.asset, contract.amount),
+//         timeout: contract.timeout,
+//         direction: contract.direction,
+//         status: contract.status,
+//         htlc,
+//     } as Contract<T>;
+// }
 
-    return {
-        asset: contract.asset,
-        refundAddress: contract.refund?.address || '',
-        redeemAddress: contract.asset === SwapAsset.EUR
-            ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
-            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC>).recipient.address,
-        amount: coinsToUnits(contract.asset, contract.amount),
-        timeout: contract.timeout,
-        direction: contract.direction,
-        status: contract.status,
-        htlc,
-    } as Contract<T>;
-}
+// export function convertSwap(swap: FastspotSwap): Swap;
+export function convertSwap(swap: FastspotQuote): Quote;
+export function convertSwap(swap: FastspotQuote /* | FastspotSwap */): Quote /* | Swap */ {
+    const inputObject = swap.sell[0];
+    const outputObject = swap.buy[0];
 
-export function convertSwap(swap: FastspotSwap): Swap;
-export function convertSwap(swap: FastspotPreSwap): PreSwap;
-export function convertSwap(swap: FastspotPreSwap | FastspotSwap): PreSwap | Swap {
-    const inputObject = swap.info.from[0];
-    const outputObject = swap.info.to[0];
-
-    const preSwap: PreSwap = {
+    const quote: Quote = {
         id: swap.id,
-        expires: Math.floor(swap.expires), // `result.expires` can be a float timestamp
-        from: convertFromData(inputObject),
-        to: convertToData(outputObject),
+        sell: convertSellBuyData(inputObject),
+        buy: convertSellBuyData(outputObject),
         status: swap.status,
-        serviceFeePercentage: parseFloat(swap.info.serviceFeePercentage as string),
-        direction: swap.info.direction,
+        fees: swap.fees.map((fee) => ({
+            ...fee,
+            amount: coinsToUnits(fee.asset, fee.amount),
+        })),
+        expiry: Math.floor(swap.expiry), // `result.expiry` can be a float timestamp
     };
 
-    if ('contracts' in swap) {
-        const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
-        for (const contract of swap.contracts) {
-            contracts[contract.asset] = convertContract(contract);
-        }
+    // if ('contracts' in swap) {
+    //     const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
+    //     for (const contract of swap.contracts) {
+    //         contracts[contract.asset] = convertContract(contract);
+    //     }
 
-        const fullSwap: Swap = {
-            ...preSwap,
-            hash: swap.hash,
-            ...(swap.secret ?  { secret: swap.secret } : {}),
-            contracts,
-        };
+    //     const fullSwap: Swap = {
+    //         ...quote,
+    //         hash: swap.hash,
+    //         ...(swap.secret ?  { secret: swap.secret } : {}),
+    //         contracts,
+    //     };
 
-        return fullSwap;
-    }
+    //     return fullSwap;
+    // }
 
-    return preSwap;
+    return quote;
 }
 
-export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): Limits<T> {
-    return {
-        asset: limits.asset,
-        daily: coinsToUnits(limits.asset, limits.daily),
-        dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
-        monthly: coinsToUnits(limits.asset, limits.monthly),
-        monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
-        perSwap: coinsToUnits(limits.asset, limits.swap),
-        current: coinsToUnits(limits.asset, limits.current),
-        reference: {
-            asset: limits.referenceAsset,
-            daily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
-            dailyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceDailyRemaining),
-            monthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
-            monthlyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceMonthlyRemaining),
-            perSwap: coinsToUnits(limits.referenceAsset, limits.referenceSwap),
-            current: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
-        },
-    };
-}
+// export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): Limits<T> {
+//     return {
+//         asset: limits.asset,
+//         daily: coinsToUnits(limits.asset, limits.daily),
+//         dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
+//         monthly: coinsToUnits(limits.asset, limits.monthly),
+//         monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
+//         perSwap: coinsToUnits(limits.asset, limits.swap),
+//         current: coinsToUnits(limits.asset, limits.current),
+//         reference: {
+//             asset: limits.referenceAsset,
+//             daily: coinsToUnits(limits.referenceAsset, limits.referenceDaily),
+//             dailyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceDailyRemaining),
+//             monthly: coinsToUnits(limits.referenceAsset, limits.referenceMonthly),
+//             monthlyRemaining: coinsToUnits(limits.referenceAsset, limits.referenceMonthlyRemaining),
+//             perSwap: coinsToUnits(limits.referenceAsset, limits.referenceSwap),
+//             current: coinsToUnits(limits.referenceAsset, limits.referenceCurrent),
+//         },
+//     };
+// }
 
-export function convertUserLimits(limits: FastspotUserLimits): UserLimits {
-    return {
-        asset: limits.asset,
-        daily: coinsToUnits(limits.asset, limits.daily),
-        dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
-        monthly: coinsToUnits(limits.asset, limits.monthly),
-        monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
-        perSwap: coinsToUnits(limits.asset, limits.swap),
-        current: coinsToUnits(limits.asset, limits.current),
-    };
-}
+// export function convertUserLimits(limits: FastspotUserLimits): UserLimits {
+//     return {
+//         asset: limits.asset,
+//         daily: coinsToUnits(limits.asset, limits.daily),
+//         dailyRemaining: coinsToUnits(limits.asset, limits.dailyRemaining),
+//         monthly: coinsToUnits(limits.asset, limits.monthly),
+//         monthlyRemaining: coinsToUnits(limits.asset, limits.monthlyRemaining),
+//         perSwap: coinsToUnits(limits.asset, limits.swap),
+//         current: coinsToUnits(limits.asset, limits.current),
+//     };
+// }
 
 export function validateRequestPairs(
-    from: SwapAsset | RequestAsset<SwapAsset>,
-    to: SwapAsset | RequestAsset<SwapAsset>,
+    sell: RequestAsset<AssetId> | RequestAssetWithAmount<AssetId>,
+    buy: RequestAsset<AssetId> | RequestAssetWithAmount<AssetId>,
 ): boolean {
-    let fromAsset: SwapAsset;
-    let toAsset: SwapAsset;
-
-    if (typeof from === 'string') {
-        if (!Object.values(SwapAsset).includes(from)) {
-            throw new Error('Invalid FROM asset');
-        }
-        fromAsset = from;
-    } else {
-        if (Object.keys(from).length !== 1) {
-            throw new Error('Only one asset allowed for FROM');
-        }
-        if (!Object.values(SwapAsset).includes(Object.keys(from)[0] as SwapAsset)) {
-            throw new Error('Invalid FROM asset');
-        }
-        fromAsset = Object.keys(from)[0] as SwapAsset;
+    if (!Object.values(AssetId).includes(sell.asset)) {
+        throw new Error('Unknown SELL asset');
     }
 
-    if (typeof to === 'string') {
-        if (!Object.values(SwapAsset).includes(to)) {
-            throw new Error('Invalid TO asset');
-        }
-        toAsset = to;
-    } else {
-        if (Object.keys(to).length !== 1) {
-            throw new Error('Only one asset allowed for TO');
-        }
-        if (!Object.values(SwapAsset).includes(Object.keys(to)[0] as SwapAsset)) {
-            throw new Error('Invalid TO asset');
-        }
-        toAsset = Object.keys(to)[0] as SwapAsset;
+    if (!Object.values(AssetId).includes(buy.asset)) {
+        throw new Error('Unknown BUY asset');
     }
 
-    if (fromAsset === toAsset) {
-        throw new Error('FROM and TO assets must be different');
+    if (sell.asset === buy.asset) {
+        throw new Error('SELL and BUY assets must be different');
+    }
+
+    if (
+        (sell.asset === AssetId.BTC_LN && !sell.peer)
+        || (buy.asset === AssetId.BTC_LN && !buy.peer)
+    ) {
+        throw new Error('For BTC_LN, peer is required');
+    }
+
+    if ('amount' in sell && 'amount' in buy) {
+        throw new Error('Only one side, either SELL or BUY, can have an amount');
+    }
+
+    if (!('amount' in sell) && !('amount' in buy)) {
+        throw new Error('One side, either SELL or BUY, must have an amount');
     }
 
     return true;

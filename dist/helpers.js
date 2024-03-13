@@ -61,6 +61,7 @@ export function convertContract(contract) {
         default: throw new Error(`Invalid asset ${contract.asset}`);
     }
     return {
+        id: contract.id,
         asset: contract.asset,
         refundAddress: ((_a = contract.refund) === null || _a === void 0 ? void 0 : _a.address) || '',
         redeemAddress: contract.asset === SwapAsset.EUR

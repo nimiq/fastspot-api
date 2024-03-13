@@ -45,7 +45,7 @@ export function init(url: string, key: string /* , referral?: ReferralCodes */) 
 
 async function api(
     path: string,
-    method: 'POST' | 'GET' | 'DELETE',
+    method: 'POST' | 'PATCH' | 'GET' | 'DELETE',
     options?: {
         headers?: Record<string, string>,
         body?: object,
@@ -176,6 +176,17 @@ export async function createSwap(
 
 //     return convertSwap(result);
 // }
+
+export async function provideFundingProof(swapId: string, contractId: string, proof: string): Promise<Record<string, any>> {
+    return api(`/swap/${swapId}`, 'PATCH', {
+        body: {
+            contracts: [{
+                id: contractId,
+                proof,
+            }],
+        },
+    });
+}
 
 // export async function getSwap(id: string): Promise<PreSwap | Swap> {
 //     const result = await api(`/swaps/${id}`, 'GET') as FastspotPreSwap | FastspotSwap;

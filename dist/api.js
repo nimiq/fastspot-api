@@ -105,6 +105,18 @@ export function createSwap(sell, buy) {
 //     }) as FastspotSwap;
 //     return convertSwap(result);
 // }
+export function provideFundingProof(swapId, contractId, proof) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return api(`/swap/${swapId}`, 'PATCH', {
+            body: {
+                contracts: [{
+                        id: contractId,
+                        proof,
+                    }],
+            },
+        });
+    });
+}
 // export async function getSwap(id: string): Promise<PreSwap | Swap> {
 //     const result = await api(`/swaps/${id}`, 'GET') as FastspotPreSwap | FastspotSwap;
 //     return convertSwap(result);

@@ -255,6 +255,7 @@ export type UsdcHtlcDetails = {
 export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | BtcLnHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
 
 export type Contract<T extends SwapAsset> = {
+    id: string,
     asset: T,
     refundAddress: string,
     redeemAddress: string,

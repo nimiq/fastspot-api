@@ -106,6 +106,7 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
     }
 
     return {
+        id: contract.id,
         asset: contract.asset,
         refundAddress: contract.refund?.address || '',
         redeemAddress: contract.asset === SwapAsset.EUR

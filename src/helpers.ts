@@ -9,12 +9,12 @@ import {
     // FastspotPrice,
     // FastspotContract,
     FastspotQuote,
-    // FastspotSwap,
+    FastspotSwap,
     // FastspotLimits,
     // FastspotUserLimits,
     // Contract,
     Quote,
-    // Swap,
+    Swap,
     // Limits,
     // UserLimits,
     // HtlcDetails,
@@ -98,9 +98,9 @@ export function convertSellBuyData(data: { asset: AssetId, amount: string }): { 
 //     } as Contract<T>;
 // }
 
-// export function convertSwap(swap: FastspotSwap): Swap;
+export function convertSwap(swap: FastspotSwap): Swap;
 export function convertSwap(swap: FastspotQuote): Quote;
-export function convertSwap(swap: FastspotQuote /* | FastspotSwap */): Quote /* | Swap */ {
+export function convertSwap(swap: FastspotQuote | FastspotSwap): Quote | Swap {
     const inputObject = swap.sell[0];
     const outputObject = swap.buy[0];
 
@@ -116,21 +116,21 @@ export function convertSwap(swap: FastspotQuote /* | FastspotSwap */): Quote /* 
         expiry: Math.floor(swap.expiry), // `result.expiry` can be a float timestamp
     };
 
-    // if ('contracts' in swap) {
-    //     const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
-    //     for (const contract of swap.contracts) {
-    //         contracts[contract.asset] = convertContract(contract);
-    //     }
+    if ('contracts' in swap) {
+        // const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
+        // for (const contract of swap.contracts) {
+        //     contracts[contract.asset] = convertContract(contract);
+        // }
 
-    //     const fullSwap: Swap = {
-    //         ...quote,
-    //         hash: swap.hash,
-    //         ...(swap.secret ?  { secret: swap.secret } : {}),
-    //         contracts,
-    //     };
+        const fullSwap: Swap = {
+            ...quote,
+            hash: swap.hash,
+            ...(swap.preimage ?  { secret: swap.preimage } : {}),
+            contracts: swap.contracts,
+        };
 
-    //     return fullSwap;
-    // }
+        return fullSwap;
+    }
 
     return quote;
 }

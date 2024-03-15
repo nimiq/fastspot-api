@@ -1,0 +1,22 @@
+meta {
+  name: Patch Swap
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{API_DOMAIN}}/swap/a8e7124e-c351-4fb7-978d-313a24894a34
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "contracts": [
+      {
+        "id": "contract-id",
+        "proof": "transaction-hex"
+      }
+    ]
+  }
+}

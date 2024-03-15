@@ -41,23 +41,23 @@ export const Precision = {
 
 export enum SwapStatus {
     PENDING_CONFIRMATION = 'PENDING_CONFIRMATION',
-    // WAITING_FOR_CONFIRMATION = 'waiting-for-confirmation',
-    // WAITING_FOR_TRANSACTIONS = 'waiting-for-transactions',
+    PENDING_DEPOSIT = 'PENDING_DEPOSIT',
+    FINISHED = 'FINISHED',
+
     // WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
-    // FINISHED = 'finished',
     // EXPIRED_PENDING_CONFIRMATION = 'expired-pending-confirmation',
     // EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
     // CANCELLED = 'cancelled',
     // INVALID = 'invalid',
 }
 
-// export enum ContractStatus {
-//     PENDING = 'pending',
-//     FUNDED = 'funded',
-//     TIMEOUT_REACHED = 'timeout-reached',
-//     REFUNDED = 'refunded',
-//     REDEEMED = 'redeemed',
-// }
+export enum ContractStatus {
+    PENDING = 'PENDING',
+    // FUNDED = 'funded',
+    // TIMEOUT_REACHED = 'timeout-reached',
+    // REFUNDED = 'refunded',
+    REDEEMED = 'REDEEMED',
+}
 
 // Internal Types
 
@@ -136,37 +136,26 @@ export type FastspotFee = {
 //     direction: 'forward' | 'reverse',
 // };
 
-// export type FastspotContract<T extends SwapAsset> = {
-//     asset: T,
-//     refund?: { address: string },
-//     recipient: T extends SwapAsset.EUR ? {
-//         kty: string,
-//         crv: string,
-//         x: string,
-//         y?: string,
-//     } : {
-//         address: string,
-//     },
-//     amount: number,
-//     timeout: number,
-//     direction: 'send' | 'receive',
-//     status: ContractStatus,
-//     id: string,
-//     intermediary: T extends SwapAsset.NIM ? {
-//         address: string,
-//         timeoutBlock: number,
-//         data: string,
-//     } : T extends SwapAsset.BTC ? {
-//         p2sh: string,
-//         p2wsh: string,
-//         scriptBytes: string,
-//     } : T extends SwapAsset.USDC_MATIC ? {
-//         address: string,
-//         data?: string, // Only provided for 'send' direction
-//     } : T extends SwapAsset.EUR ? {
-//         contractId?: string,
-//     } : never,
-// };
+// TODO: Not yet complete
+export type FastspotContract<T extends AssetId> = {
+    id: string,
+    asset: T,
+    amount: string,
+    status: ContractStatus,
+    refundTarget: string | {
+        address: string,
+    } | null,
+    recipient: string | (T extends AssetId.EUR ? {
+        kty: string,
+        crv: string,
+        x: string,
+        y?: string,
+    } : {
+        address: string,
+    }) | null,
+    expiry: number,
+    data: null,
+};
 
 // export type FastspotContractWithEstimate<T extends SwapAsset> = {
 //     contract: FastspotContract<T>,
@@ -188,11 +177,12 @@ export type FastspotQuote = {
     expiry: number,
 };
 
-// export type FastspotSwap = FastspotQuote & {
-//     hash: string,
-//     secret?: string,
-//     contracts: FastspotContract<SwapAsset>[],
-// };
+export type FastspotSwap = Omit<FastspotQuote, 'status'> & {
+    status: SwapStatus,
+    hash: string,
+    preimage?: string,
+    contracts: FastspotContract<AssetId>[],
+};
 
 // export type FastspotLimits<T extends SwapAsset> = {
 //     asset: T,
@@ -224,8 +214,8 @@ export type FastspotQuote = {
 export type FastspotResult
     = FastspotAsset[]
     // | FastspotEstimate[]
-    | FastspotQuote;
-    // | FastspotSwap
+    | FastspotQuote
+    | FastspotSwap;
     // | FastspotContractWithEstimate<SwapAsset>
     // | FastspotLimits<SwapAsset>
     // | FastspotUserLimits;
@@ -337,11 +327,11 @@ export type Quote = {
     expiry: number,
 };
 
-// export type Swap = PreSwap & {
-//     hash: string,
-//     secret?: string,
-//     contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>>,
-// };
+export type Swap = Quote & {
+    hash: string,
+    preimage?: string,
+    contracts: FastspotContract<AssetId>[],
+};
 
 // export type Limits<T extends SwapAsset> = {
 //     asset: T,

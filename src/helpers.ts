@@ -125,7 +125,7 @@ export function convertSwap(swap: FastspotQuote | FastspotSwap): Quote | Swap {
         const fullSwap: Swap = {
             ...quote,
             hash: swap.hash,
-            ...(swap.preimage ?  { secret: swap.preimage } : {}),
+            ...(swap.preimage ?  { preimage: swap.preimage } : {}),
             contracts: swap.contracts,
         };
 

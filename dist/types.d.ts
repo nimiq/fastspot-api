@@ -31,7 +31,8 @@ export declare const Precision: {
 export declare enum SwapStatus {
     PENDING_CONFIRMATION = "PENDING_CONFIRMATION",
     PENDING_DEPOSIT = "PENDING_DEPOSIT",
-    FINISHED = "FINISHED"
+    FINISHED = "FINISHED",
+    EXPIRED = "EXPIRED"
 }
 export declare enum ContractStatus {
     PENDING = "PENDING",

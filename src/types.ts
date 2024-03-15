@@ -43,10 +43,10 @@ export enum SwapStatus {
     PENDING_CONFIRMATION = 'PENDING_CONFIRMATION',
     PENDING_DEPOSIT = 'PENDING_DEPOSIT',
     FINISHED = 'FINISHED',
+    EXPIRED = 'EXPIRED',
 
     // WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
     // EXPIRED_PENDING_CONFIRMATION = 'expired-pending-confirmation',
-    // EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
     // CANCELLED = 'cancelled',
     // INVALID = 'invalid',
 }

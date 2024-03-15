@@ -42,9 +42,9 @@ export var SwapStatus;
     SwapStatus["PENDING_CONFIRMATION"] = "PENDING_CONFIRMATION";
     SwapStatus["PENDING_DEPOSIT"] = "PENDING_DEPOSIT";
     SwapStatus["FINISHED"] = "FINISHED";
+    SwapStatus["EXPIRED"] = "EXPIRED";
     // WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
     // EXPIRED_PENDING_CONFIRMATION = 'expired-pending-confirmation',
-    // EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
     // CANCELLED = 'cancelled',
     // INVALID = 'invalid',
 })(SwapStatus || (SwapStatus = {}));

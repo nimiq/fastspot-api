@@ -47,7 +47,7 @@ export function convertSwap(swap) {
         // for (const contract of swap.contracts) {
         //     contracts[contract.asset] = convertContract(contract);
         // }
-        const fullSwap = Object.assign(Object.assign(Object.assign(Object.assign({}, quote), { hash: swap.hash }), (swap.preimage ? { secret: swap.preimage } : {})), { contracts: swap.contracts });
+        const fullSwap = Object.assign(Object.assign(Object.assign(Object.assign({}, quote), { hash: swap.hash }), (swap.preimage ? { preimage: swap.preimage } : {})), { contracts: swap.contracts });
         return fullSwap;
     }
     return quote;

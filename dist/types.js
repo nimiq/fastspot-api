@@ -40,15 +40,22 @@ export const Precision = {
 export var SwapStatus;
 (function (SwapStatus) {
     SwapStatus["PENDING_CONFIRMATION"] = "PENDING_CONFIRMATION";
-    // WAITING_FOR_CONFIRMATION = 'waiting-for-confirmation',
-    // WAITING_FOR_TRANSACTIONS = 'waiting-for-transactions',
+    SwapStatus["PENDING_DEPOSIT"] = "PENDING_DEPOSIT";
+    SwapStatus["FINISHED"] = "FINISHED";
     // WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
-    // FINISHED = 'finished',
     // EXPIRED_PENDING_CONFIRMATION = 'expired-pending-confirmation',
     // EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
     // CANCELLED = 'cancelled',
     // INVALID = 'invalid',
 })(SwapStatus || (SwapStatus = {}));
+export var ContractStatus;
+(function (ContractStatus) {
+    ContractStatus["PENDING"] = "PENDING";
+    // FUNDED = 'funded',
+    // TIMEOUT_REACHED = 'timeout-reached',
+    // REFUNDED = 'refunded',
+    ContractStatus["REDEEMED"] = "REDEEMED";
+})(ContractStatus || (ContractStatus = {}));
 var FastspotFeeSource;
 (function (FastspotFeeSource) {
     FastspotFeeSource["NETWORK"] = "NETWORK";
@@ -61,11 +68,6 @@ var FastspotFeeType;
     FastspotFeeType["REFUND_TRANSACTION"] = "REFUND_TRANSACTION";
     FastspotFeeType["EXECUTION"] = "EXECUTION";
 })(FastspotFeeType || (FastspotFeeType = {}));
-// export type Swap = PreSwap & {
-//     hash: string,
-//     secret?: string,
-//     contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>>,
-// };
 // export type Limits<T extends SwapAsset> = {
 //     asset: T,
 //     daily: number,

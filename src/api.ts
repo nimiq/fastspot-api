@@ -5,7 +5,7 @@ import {
     // FastspotEstimate,
     FastspotQuote,
     // FastspotContractWithEstimate,
-    // FastspotSwap,
+    FastspotSwap,
     // FastspotLimits,
     // FastspotUserLimits,
     RequestAsset,
@@ -14,7 +14,7 @@ import {
     // Estimate,
     Quote,
     // ContractWithEstimate,
-    // Swap,
+    Swap,
     // Limits,
     // UserLimits,
     // AssetList,
@@ -177,21 +177,23 @@ export async function createSwap(
 //     return convertSwap(result);
 // }
 
-export async function provideFundingProof(swapId: string, contractId: string, proof: string): Promise<Record<string, any>> {
-    return api(`/swap/${swapId}`, 'PATCH', {
+export async function provideFundingProof(swapId: string, contractId: string, proof: string): Promise<Swap> {
+    const result = await api(`/swap/${swapId}`, 'PATCH', {
         body: {
             contracts: [{
                 id: contractId,
                 proof,
             }],
         },
-    });
+    }) as FastspotSwap;
+
+    return convertSwap(result);
 }
 
-// export async function getSwap(id: string): Promise<PreSwap | Swap> {
-//     const result = await api(`/swaps/${id}`, 'GET') as FastspotPreSwap | FastspotSwap;
-//     return convertSwap(result);
-// }
+export async function getSwap(id: string): Promise<Quote | Swap> {
+    const result = await api(`/swap/${id}`, 'GET') as FastspotQuote | FastspotSwap;
+    return convertSwap(result);
+}
 
 // export async function cancelSwap(swap: PreSwap): Promise<PreSwap> {
 //     const result = await api(`/swaps/${swap.id}`, 'DELETE') as FastspotPreSwap;

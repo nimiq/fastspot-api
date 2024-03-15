@@ -29,22 +29,28 @@ export declare const Precision: {
     readonly USD: 2;
 };
 export declare enum SwapStatus {
-    PENDING_CONFIRMATION = "PENDING_CONFIRMATION"
+    PENDING_CONFIRMATION = "PENDING_CONFIRMATION",
+    PENDING_DEPOSIT = "PENDING_DEPOSIT",
+    FINISHED = "FINISHED"
 }
-declare type FastspotBaseNetwork = {
+export declare enum ContractStatus {
+    PENDING = "PENDING",
+    REDEEMED = "REDEEMED"
+}
+type FastspotBaseNetwork = {
     name: string;
 };
-declare type FastspotLayer2Network = FastspotBaseNetwork & {
+type FastspotLayer2Network = FastspotBaseNetwork & {
     parent: {
         name: string;
     };
 };
-declare type FastspotTokenNetwork = FastspotBaseNetwork & {
+type FastspotTokenNetwork = FastspotBaseNetwork & {
     nativeAsset: string;
     chainId: string;
 };
-declare type FastspotNetwork = FastspotBaseNetwork | FastspotLayer2Network | FastspotTokenNetwork;
-export declare type FastspotAsset = {
+type FastspotNetwork = FastspotBaseNetwork | FastspotLayer2Network | FastspotTokenNetwork;
+export type FastspotAsset = {
     /** @deprecated */
     id: string;
     ticker: Ticker;
@@ -72,7 +78,7 @@ declare enum FastspotFeeType {
     REFUND_TRANSACTION = "REFUND_TRANSACTION",
     EXECUTION = "EXECUTION"
 }
-export declare type FastspotFee = {
+export type FastspotFee = {
     asset: Ticker;
     network: string;
     amount: string;
@@ -81,7 +87,26 @@ export declare type FastspotFee = {
     type: FastspotFeeType;
     reason?: string;
 };
-export declare type FastspotQuote = {
+export type FastspotContract<T extends AssetId> = {
+    id: string;
+    asset: T;
+    amount: string;
+    status: ContractStatus;
+    refundTarget: string | {
+        address: string;
+    } | null;
+    recipient: string | (T extends AssetId.EUR ? {
+        kty: string;
+        crv: string;
+        x: string;
+        y?: string;
+    } : {
+        address: string;
+    }) | null;
+    expiry: number;
+    data: null;
+};
+export type FastspotQuote = {
     id: string;
     status: SwapStatus;
     sell: {
@@ -95,24 +120,30 @@ export declare type FastspotQuote = {
     fees: FastspotFee[];
     expiry: number;
 };
-export declare type FastspotResult = FastspotAsset[] | FastspotQuote;
-export declare type FastspotError = {
+export type FastspotSwap = Omit<FastspotQuote, 'status'> & {
+    status: SwapStatus;
+    hash: string;
+    preimage?: string;
+    contracts: FastspotContract<AssetId>[];
+};
+export type FastspotResult = FastspotAsset[] | FastspotQuote | FastspotSwap;
+export type FastspotError = {
     status: number;
     type: string;
     title: string;
     detail: string;
 };
-export declare type RequestAsset<A extends AssetId> = {
+export type RequestAsset<A extends AssetId> = {
     asset: A;
 } & (A extends AssetId.BTC_LN ? {
     peer: string;
 } : {
     peer?: string;
 });
-export declare type RequestAssetWithAmount<A extends AssetId> = RequestAsset<A> & {
+export type RequestAssetWithAmount<A extends AssetId> = RequestAsset<A> & {
     amount: string | number;
 };
-export declare type Fee = {
+export type Fee = {
     asset: Ticker;
     network: string;
     amount: number;
@@ -121,7 +152,7 @@ export declare type Fee = {
     type: FastspotFeeType;
     reason?: string;
 };
-export declare type Quote = {
+export type Quote = {
     id: string;
     status: SwapStatus;
     sell: {
@@ -134,5 +165,10 @@ export declare type Quote = {
     };
     fees: Fee[];
     expiry: number;
+};
+export type Swap = Quote & {
+    hash: string;
+    preimage?: string;
+    contracts: FastspotContract<AssetId>[];
 };
 export {};

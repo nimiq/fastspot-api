@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { validateRequestPairs, 
 //     convertFromData,
 //     convertToData,
@@ -26,35 +17,31 @@ export function init(url, key /* , referral?: ReferralCodes */) {
     API_KEY = key;
     // REFERRAL = referral;
 }
-function api(path, method, options) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!API_URL || !API_KEY)
-            throw new Error('API URL and key not set, call init() first');
-        const response = yield fetch(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
-        if (!response.ok) {
-            const error = yield response.json();
-            throw new Error(error.detail);
-        }
-        return response.json();
-    });
+async function api(path, method, options) {
+    if (!API_URL || !API_KEY)
+        throw new Error('API URL and key not set, call init() first');
+    const response = await fetch(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail);
+    }
+    return response.json();
 }
-export function createSwap(sell, buy) {
-    return __awaiter(this, void 0, void 0, function* () {
-        validateRequestPairs(sell, buy);
-        const headers = {};
-        // if (REFERRAL) {
-        //     headers['X-S3-Partner-Code'] = REFERRAL.partnerCode;
-        //     if (REFERRAL.refCode) headers['X-S3-Ref-Code'] = REFERRAL.refCode;
-        // }
-        const result = yield api('/swap/create', 'POST', {
-            headers,
-            body: {
-                sell: [sell],
-                buy: [buy],
-            },
-        });
-        return convertSwap(result);
+export async function createSwap(sell, buy) {
+    validateRequestPairs(sell, buy);
+    const headers = {};
+    // if (REFERRAL) {
+    //     headers['X-S3-Partner-Code'] = REFERRAL.partnerCode;
+    //     if (REFERRAL.refCode) headers['X-S3-Ref-Code'] = REFERRAL.refCode;
+    // }
+    const result = await api('/swap/create', 'POST', {
+        headers,
+        body: {
+            sell: [sell],
+            buy: [buy],
+        },
     });
+    return convertSwap(result);
 }
 // export async function confirmSwap(
 //     swap: PreSwap,
@@ -105,22 +92,21 @@ export function createSwap(sell, buy) {
 //     }) as FastspotSwap;
 //     return convertSwap(result);
 // }
-export function provideFundingProof(swapId, contractId, proof) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return api(`/swap/${swapId}`, 'PATCH', {
-            body: {
-                contracts: [{
-                        id: contractId,
-                        proof,
-                    }],
-            },
-        });
+export async function provideFundingProof(swapId, contractId, proof) {
+    const result = await api(`/swap/${swapId}`, 'PATCH', {
+        body: {
+            contracts: [{
+                    id: contractId,
+                    proof,
+                }],
+        },
     });
+    return convertSwap(result);
 }
-// export async function getSwap(id: string): Promise<PreSwap | Swap> {
-//     const result = await api(`/swaps/${id}`, 'GET') as FastspotPreSwap | FastspotSwap;
-//     return convertSwap(result);
-// }
+export async function getSwap(id) {
+    const result = await api(`/swap/${id}`, 'GET');
+    return convertSwap(result);
+}
 // export async function cancelSwap(swap: PreSwap): Promise<PreSwap> {
 //     const result = await api(`/swaps/${swap.id}`, 'DELETE') as FastspotPreSwap;
 //     return convertSwap(result);

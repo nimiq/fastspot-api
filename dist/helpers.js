@@ -1,5 +1,4 @@
 import { AssetId, Ticker, Precision,
-// Swap,
 // Limits,
 // UserLimits,
 // HtlcDetails,
@@ -32,7 +31,7 @@ export function convertSellBuyData(data) {
         amount: coinsToUnits(assetToTicker(asset), data.amount),
     };
 }
-export function convertSwap(swap /* | FastspotSwap */) {
+export function convertSwap(swap) {
     const inputObject = swap.sell[0];
     const outputObject = swap.buy[0];
     const quote = {
@@ -43,19 +42,14 @@ export function convertSwap(swap /* | FastspotSwap */) {
         fees: swap.fees.map((fee) => (Object.assign(Object.assign({}, fee), { amount: coinsToUnits(fee.asset, fee.amount) }))),
         expiry: Math.floor(swap.expiry), // `result.expiry` can be a float timestamp
     };
-    // if ('contracts' in swap) {
-    //     const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
-    //     for (const contract of swap.contracts) {
-    //         contracts[contract.asset] = convertContract(contract);
-    //     }
-    //     const fullSwap: Swap = {
-    //         ...quote,
-    //         hash: swap.hash,
-    //         ...(swap.secret ?  { secret: swap.secret } : {}),
-    //         contracts,
-    //     };
-    //     return fullSwap;
-    // }
+    if ('contracts' in swap) {
+        // const contracts: Partial<Record<SwapAsset, Contract<SwapAsset>>> = {};
+        // for (const contract of swap.contracts) {
+        //     contracts[contract.asset] = convertContract(contract);
+        // }
+        const fullSwap = Object.assign(Object.assign(Object.assign(Object.assign({}, quote), { hash: swap.hash }), (swap.preimage ? { secret: swap.preimage } : {})), { contracts: swap.contracts });
+        return fullSwap;
+    }
     return quote;
 }
 // export function convertLimits<T extends SwapAsset>(limits: FastspotLimits<T>): Limits<T> {

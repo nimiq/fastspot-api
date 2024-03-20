@@ -9,18 +9,20 @@ convertSwap,
  } from './helpers';
 let API_URL;
 let API_KEY;
+let FETCH;
 // let REFERRAL: ReferralCodes | undefined;
-export function init(url, key /* , referral?: ReferralCodes */) {
+export function init(url, key, options) {
     if (!url || !key)
         throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
+    FETCH = (options === null || options === void 0 ? void 0 : options.customFetch) || fetch;
     // REFERRAL = referral;
 }
 async function api(path, method, options) {
     if (!API_URL || !API_KEY)
         throw new Error('API URL and key not set, call init() first');
-    const response = await fetch(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
+    const response = await FETCH(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail);

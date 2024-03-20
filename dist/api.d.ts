@@ -1,5 +1,8 @@
 import { RequestAsset, SwapAsset, Estimate, PreSwap, ContractWithEstimate, Swap, Limits, UserLimits, AssetList, ReferralCodes } from './types';
-export declare function init(url: string, key: string, referral?: ReferralCodes): void;
+export declare function init(url: string, key: string, options?: Partial<{
+    referral?: ReferralCodes;
+    customFetch?: typeof fetch;
+}>): void;
 export declare function getEstimate(from: RequestAsset<SwapAsset>, to: SwapAsset): Promise<Estimate>;
 export declare function getEstimate(from: SwapAsset, to: RequestAsset<SwapAsset>): Promise<Estimate>;
 export declare function createSwap(from: RequestAsset<SwapAsset>, to: SwapAsset): Promise<PreSwap>;

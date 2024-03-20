@@ -12,18 +12,20 @@ import { validateRequestPairs, convertFromData, convertToData, convertContract, 
 let API_URL;
 let API_KEY;
 let REFERRAL;
-export function init(url, key, referral) {
+let FETCH;
+export function init(url, key, options) {
     if (!url || !key)
         throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
-    REFERRAL = referral;
+    REFERRAL = options === null || options === void 0 ? void 0 : options.referral;
+    FETCH = (options === null || options === void 0 ? void 0 : options.customFetch) || fetch;
 }
 function api(path, method, options) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!API_URL || !API_KEY)
             throw new Error('API URL and key not set, call init() first');
-        const response = yield fetch(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
+        const response = yield FETCH(`${API_URL}${path}`, Object.assign({ method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-FAST-ApiKey': API_KEY }, options === null || options === void 0 ? void 0 : options.headers) }, ((options === null || options === void 0 ? void 0 : options.body) ? { body: JSON.stringify(options.body) } : {})));
         if (!response.ok) {
             const error = yield response.json();
             throw new Error(error.detail);

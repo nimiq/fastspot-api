@@ -34,12 +34,14 @@ import {
 let API_URL: string | undefined;
 let API_KEY: string | undefined;
 let REFERRAL: ReferralCodes | undefined;
+let FETCH: typeof fetch;
 
-export function init(url: string, key: string, referral?: ReferralCodes) {
+export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch? : typeof fetch}>) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
-    REFERRAL = referral;
+    REFERRAL = options?.referral;
+    FETCH = options?.customFetch || fetch;
 }
 
 async function api(
@@ -52,7 +54,7 @@ async function api(
 ): Promise<FastspotResult> {
     if (!API_URL || !API_KEY) throw new Error('API URL and key not set, call init() first');
 
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await FETCH(`${API_URL}${path}`, {
         method,
         headers: {
             'Content-Type': 'application/json',

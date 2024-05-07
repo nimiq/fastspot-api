@@ -19,7 +19,7 @@ export type ReferralCodes = {
 export const Precision = {
     [SwapAsset.NIM]: 5,
     [SwapAsset.BTC]: 8,
-    [SwapAsset.BTC_LN]: 11,
+    [SwapAsset.BTC_LN]: 8,
     [SwapAsset.USDC]: 6,
     [SwapAsset.USDC_MATIC]: 6,
     [SwapAsset.EUR]: 2,

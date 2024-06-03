@@ -137,7 +137,7 @@ export async function confirmSwap(
         asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
         address: string,
     } | {
-        asset: SwapAsset.EUR,
+        asset: SwapAsset.EUR | SwapAsset.CRC,
         kty: string,
         crv: string,
         x: string,
@@ -149,7 +149,7 @@ export async function confirmSwap(
         asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
         address: string,
     } | {
-        asset: SwapAsset.EUR,
+        asset: SwapAsset.EUR | SwapAsset.CRC,
     },
     uid?: string,
     kycToken?: string,
@@ -169,6 +169,7 @@ export async function confirmSwap(
     let beneficiary: Record<string, string | { kty: string, crv: string, x: string, y?: string }>;
     switch (redeem.asset) {
         case SwapAsset.EUR:
+        case SwapAsset.CRC:
             beneficiary = {
                 [redeem.asset]: {
                     kty: redeem.kty,

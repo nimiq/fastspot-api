@@ -112,6 +112,12 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
                 // TODO: Parse clearing instructions if provided
             };
             break;
+        case SwapAsset.CRC:
+            htlc = {
+                address: (contract as FastspotContract<SwapAsset.CRC>).intermediary.contractId || contract.id,
+                // TODO: Parse clearing instructions if provided
+            };
+            break;
         default:
             throw new Error(`Invalid asset ${contract.asset}`);
     }

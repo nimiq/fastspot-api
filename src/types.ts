@@ -5,6 +5,7 @@ export enum SwapAsset {
     USDC = 'USDC',
     USDC_MATIC = 'USDC_MATIC',
     EUR = 'EUR',
+    CRC = 'CRC',
 }
 
 export enum ReferenceAsset {
@@ -24,6 +25,7 @@ export const Precision = {
     [SwapAsset.USDC_MATIC]: 6,
     [SwapAsset.EUR]: 2,
     [ReferenceAsset.USD]: 2,
+    [SwapAsset.CRC]: 2,
 } as const;
 
 export enum SwapStatus {
@@ -95,7 +97,7 @@ export type FastspotEstimate = {
 export type FastspotContract<T extends SwapAsset> = {
     asset: T,
     refund?: { address: string } | null,
-    recipient: T extends SwapAsset.EUR ? {
+    recipient: T extends SwapAsset.EUR | SwapAsset.CRC ? {
             kty: string,
             crv: string,
             x: string,
@@ -129,7 +131,7 @@ export type FastspotContract<T extends SwapAsset> = {
                 address: string,
                 data?: string, // Only provided for 'send' direction
             }
-        : T extends SwapAsset.EUR ? {
+        : T extends SwapAsset.EUR | SwapAsset.CRC ? {
                 contractId?: string,
             }
         : never,
@@ -250,13 +252,23 @@ export type EurHtlcDetails = {
     address: string,
 };
 
+export type CrcHtlcDetails = {
+    address: string,
+};
+
 export type UsdcHtlcDetails = {
     address: string,
     contract: string,
     data?: string,
 };
 
-export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | BtcLnHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
+export type HtlcDetails =
+    | NimHtlcDetails
+    | BtcHtlcDetails
+    | BtcLnHtlcDetails
+    | UsdcHtlcDetails
+    | EurHtlcDetails
+    | CrcHtlcDetails;
 
 export type Contract<T extends SwapAsset> = {
     id: string,
@@ -272,6 +284,7 @@ export type Contract<T extends SwapAsset> = {
         : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
         : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
+        : T extends SwapAsset.CRC ? CrcHtlcDetails
         : never,
 };
 

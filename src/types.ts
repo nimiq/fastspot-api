@@ -5,6 +5,7 @@ export enum SwapAsset {
     USDC = 'USDC',
     USDC_MATIC = 'USDC_MATIC',
     EUR = 'EUR',
+    CRC = 'CRC',
 }
 
 export enum ReferenceAsset {
@@ -24,6 +25,7 @@ export const Precision = {
     [SwapAsset.USDC_MATIC]: 6,
     [SwapAsset.EUR]: 2,
     [ReferenceAsset.USD]: 2,
+    [SwapAsset.CRC]: 2,
 } as const;
 
 export enum SwapStatus {
@@ -95,7 +97,7 @@ export type FastspotEstimate = {
 export type FastspotContract<T extends SwapAsset> = {
     asset: T,
     refund?: { address: string } | null,
-    recipient: T extends SwapAsset.EUR ? {
+    recipient: T extends SwapAsset.EUR | SwapAsset.CRC ? {
         kty: string,
         crv: string,
         x: string,
@@ -124,7 +126,7 @@ export type FastspotContract<T extends SwapAsset> = {
     } : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? {
         address: string,
         data?: string, // Only provided for 'send' direction
-    } : T extends SwapAsset.EUR ? {
+    } : T extends SwapAsset.EUR | SwapAsset.CRC ? {
         contractId?: string,
     } : never,
 };
@@ -201,14 +203,14 @@ export type Asset = {
     },
 };
 
-export type AssetList = {[asset in SwapAsset]: Asset};
+export type AssetList = { [asset in SwapAsset]: Asset };
 
 // export type RequestAsset = Partial<Record<SwapAsset, number>>;
 export type RequestAsset<K extends SwapAsset> = {
     [P in K]: (Record<P, number> &
         Partial<Record<Exclude<K, P>, never>>) extends infer O
-            ? { [Q in keyof O]: O[Q] }
-            : never
+    ? { [Q in keyof O]: O[Q] }
+    : never
 }[K];
 
 export type PriceData = {
@@ -246,13 +248,17 @@ export type EurHtlcDetails = {
     address: string,
 };
 
+export type CrcHtlcDetails = {
+    address: string,
+};
+
 export type UsdcHtlcDetails = {
     address: string,
     contract: string,
     data?: string,
 };
 
-export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | BtcLnHtlcDetails | UsdcHtlcDetails | EurHtlcDetails;
+export type HtlcDetails = NimHtlcDetails | BtcHtlcDetails | BtcLnHtlcDetails | UsdcHtlcDetails | EurHtlcDetails | CrcHtlcDetails;
 
 export type Contract<T extends SwapAsset> = {
     id: string,
@@ -264,11 +270,12 @@ export type Contract<T extends SwapAsset> = {
     direction: 'send' | 'receive',
     status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
-        : T extends SwapAsset.BTC ? BtcHtlcDetails
-        : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
-        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
-        : T extends SwapAsset.EUR ? EurHtlcDetails
-        : never,
+    : T extends SwapAsset.BTC ? BtcHtlcDetails
+    : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
+    : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
+    : T extends SwapAsset.EUR ? EurHtlcDetails
+    : T extends SwapAsset.CRC ? CrcHtlcDetails
+    : never,
 };
 
 export type ContractWithEstimate<T extends SwapAsset> = Estimate & {

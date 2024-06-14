@@ -36,7 +36,7 @@ let API_KEY: string | undefined;
 let REFERRAL: ReferralCodes | undefined;
 let FETCH: typeof fetch;
 
-export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch? : typeof fetch}>) {
+export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch?: typeof fetch }>) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
@@ -133,7 +133,7 @@ export async function confirmSwap(
         asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
         address: string,
     } | {
-        asset: SwapAsset.EUR,
+        asset: SwapAsset.EUR | SwapAsset.CRC,
         kty: string,
         crv: string,
         x: string,
@@ -145,7 +145,7 @@ export async function confirmSwap(
         asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
         address: string,
     } | {
-        asset: SwapAsset.EUR,
+        asset: SwapAsset.EUR | SwapAsset.CRC,
     },
     uid?: string,
     kycToken?: string,
@@ -161,20 +161,36 @@ export async function confirmSwap(
         }
     }
 
-    const result = await api(`/swaps/${swap.id}`, 'POST', {
-        headers,
-        body: {
-            confirm: true,
-            beneficiary: redeem.asset === SwapAsset.EUR
-                ? { [redeem.asset]: {
+    // Using a switch statement for TS safety
+    let beneficiary: Record<string, string | { kty: string, crv: string, x: string, y?: string }>;
+    switch (redeem.asset) {
+        case SwapAsset.EUR:
+        case SwapAsset.CRC:
+            beneficiary = {
+                [redeem.asset]: {
                     kty: redeem.kty,
                     crv: redeem.crv,
                     x: redeem.x,
                     ...(redeem.y ? { y: redeem.y } : {}),
-                } }
-                : redeem.asset === SwapAsset.BTC_LN
-                    ? {}
-                    : { [redeem.asset]: redeem.address },
+                }
+            };
+            break;
+        case SwapAsset.BTC_LN:
+            beneficiary = {};
+            break;
+        case SwapAsset.NIM:
+        case SwapAsset.BTC:
+        case SwapAsset.USDC:
+        case SwapAsset.USDC_MATIC:
+            beneficiary = { [redeem.asset]: redeem.address };
+            break;
+    }
+
+    const result = await api(`/swaps/${swap.id}`, 'POST', {
+        headers,
+        body: {
+            confirm: true,
+            beneficiary,
             ...(refund ? { refund: { [refund.asset]: 'address' in refund ? refund.address : '' } } : {}),
             ...(uid ? { uid } : {}),
         },

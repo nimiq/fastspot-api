@@ -207,10 +207,9 @@ export type AssetList = { [asset in SwapAsset]: Asset };
 
 // export type RequestAsset = Partial<Record<SwapAsset, number>>;
 export type RequestAsset<K extends SwapAsset> = {
-    [P in K]: (Record<P, number> &
-        Partial<Record<Exclude<K, P>, never>>) extends infer O
-    ? { [Q in keyof O]: O[Q] }
-    : never
+    [P in K]: (Record<P, number> & Partial<Record<Exclude<K, P>, never>>) extends infer O
+        ? { [Q in keyof O]: O[Q] }
+        : never
 }[K];
 
 export type PriceData = {
@@ -270,12 +269,12 @@ export type Contract<T extends SwapAsset> = {
     direction: 'send' | 'receive',
     status: ContractStatus,
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
-    : T extends SwapAsset.BTC ? BtcHtlcDetails
-    : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
-    : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
-    : T extends SwapAsset.EUR ? EurHtlcDetails
-    : T extends SwapAsset.CRC ? CrcHtlcDetails
-    : never,
+        : T extends SwapAsset.BTC ? BtcHtlcDetails
+        : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
+        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcHtlcDetails
+        : T extends SwapAsset.EUR ? EurHtlcDetails
+        : T extends SwapAsset.CRC ? CrcHtlcDetails
+        : never,
 };
 
 export type ContractWithEstimate<T extends SwapAsset> = Estimate & {

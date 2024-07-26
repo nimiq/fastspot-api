@@ -1,0 +1,27 @@
+meta {
+  name: Create Swap
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_URL}}/fast/v1/swaps
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "from": "NIM",
+    "to": {
+      "CRC": 500
+    },
+    "includedFees": "required"
+  }
+}
+
+script:post-response {
+  let data = res.getBody();
+  bru.setEnvVar("swap_id",data.id);
+  
+}

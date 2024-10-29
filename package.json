@@ -13,9 +13,7 @@
   "scripts": {
     "build": "tsc",
     "fmt": "dprint fmt",
-    "fmt:check": "dprint fmt --check",
-    "lint": "oxlint",
-    "typecheck": "tsc --noEmit"
+    "lint": "oxlint"
   },
   "devDependencies": {
     "dprint": "^0.47.5",

@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+oxlint@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/oxlint/-/oxlint-0.10.3.tgz#e3592a879243b33459f56f5e5116ef3c293f85ea"
+  integrity sha512-af5u5+s4adyszujeILPDRGwix0o5M1+qR1eqxNSmJhTKVRX7xdrT9s2rpNpMYxQmPyWRhC/+5Gqyb+f/PtbK9A==
+  optionalDependencies:
+    "@oxlint/darwin-arm64" "0.10.3"
+    "@oxlint/darwin-x64" "0.10.3"
+    "@oxlint/linux-arm64-gnu" "0.10.3"
+    "@oxlint/linux-arm64-musl" "0.10.3"
+    "@oxlint/linux-x64-gnu" "0.10.3"
+    "@oxlint/linux-x64-musl" "0.10.3"
+    "@oxlint/win32-arm64" "0.10.3"
+    "@oxlint/win32-x64" "0.10.3"
+
 typescript@^5.6.3:
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"

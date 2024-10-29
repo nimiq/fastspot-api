@@ -134,7 +134,7 @@ export async function createSwap(
 export async function confirmSwap(
     swap: PreSwap,
     redeem: {
-        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
+        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT,
         address: string,
     } | {
         asset: SwapAsset.EUR,
@@ -146,7 +146,7 @@ export async function confirmSwap(
         asset: SwapAsset.BTC_LN,
     },
     refund?: {
-        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC,
+        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT,
         address: string,
     } | {
         asset: SwapAsset.EUR,
@@ -185,6 +185,7 @@ export async function confirmSwap(
         case SwapAsset.BTC:
         case SwapAsset.USDC:
         case SwapAsset.USDC_MATIC:
+        case SwapAsset.USDT:
             beneficiary = { [redeem.asset]: redeem.address };
             break;
     }
@@ -249,7 +250,7 @@ export async function getAssets(): Promise<AssetList> {
             records[record.symbol] = {
                 asset: record.symbol,
                 name: record.name,
-                feePerUnit: coinsToUnits(record.symbol, record.feePerUnit, { treatUsdcAsMatic: true }),
+                feePerUnit: coinsToUnits(record.symbol, record.feePerUnit, { treatPolygonTokenAsMatic: true }),
                 limits: {
                     minimum: record.limits && record.limits.minimum
                         ? coinsToUnits(record.symbol, record.limits.minimum)

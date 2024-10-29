@@ -36,7 +36,7 @@ let API_KEY: string | undefined;
 let REFERRAL: ReferralCodes | undefined;
 let FETCH: typeof fetch;
 
-export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch? : typeof fetch}>) {
+export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch?: typeof fetch }>) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;

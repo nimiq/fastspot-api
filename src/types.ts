@@ -201,14 +201,13 @@ export type Asset = {
     },
 };
 
-export type AssetList = {[asset in SwapAsset]: Asset};
+export type AssetList = { [asset in SwapAsset]: Asset };
 
 // export type RequestAsset = Partial<Record<SwapAsset, number>>;
 export type RequestAsset<K extends SwapAsset> = {
-    [P in K]: (Record<P, number> &
-        Partial<Record<Exclude<K, P>, never>>) extends infer O
-            ? { [Q in keyof O]: O[Q] }
-            : never
+    [P in K]: (Record<P, number> & Partial<Record<Exclude<K, P>, never>>) extends infer O
+        ? { [Q in keyof O]: O[Q] }
+        : never
 }[K];
 
 export type PriceData = {

@@ -48,7 +48,7 @@ export function convertFromData(from: FastspotPrice): PriceData {
         fee: coinsToUnits(asset, from.fundingNetworkFee.total, { roundUp: true }),
         ...(from.fundingNetworkFee.perUnit ? {
             feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        }: {}),
+        } : {}),
         serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, { roundUp: true }),
         serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, { roundUp: true }),
     };
@@ -62,7 +62,7 @@ export function convertToData(to: FastspotPrice): PriceData {
         fee: coinsToUnits(asset, to.finalizeNetworkFee.total, { roundUp: true }),
         ...(to.finalizeNetworkFee.perUnit ? {
             feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        }: {}),
+        } : {}),
         serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, { roundUp: true }),
         serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, { roundUp: true }),
     };
@@ -145,7 +145,7 @@ export function convertSwap(swap: FastspotPreSwap | FastspotSwap): PreSwap | Swa
         const fullSwap: Swap = {
             ...preSwap,
             hash: swap.hash,
-            ...(swap.secret ?  { secret: swap.secret } : {}),
+            ...(swap.secret ? { secret: swap.secret } : {}),
             contracts,
         };
 

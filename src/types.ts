@@ -96,37 +96,43 @@ export type FastspotContract<T extends SwapAsset> = {
     asset: T,
     refund?: { address: string } | null,
     recipient: T extends SwapAsset.EUR ? {
-        kty: string,
-        crv: string,
-        x: string,
-        y?: string,
-    } : {
-        address: string,
-    },
+            kty: string,
+            crv: string,
+            x: string,
+            y?: string,
+        }
+        : {
+            address: string,
+        },
     amount: number,
     timeout: number,
     direction: 'send' | 'receive',
     status: ContractStatus,
     id: string,
     intermediary: T extends SwapAsset.NIM ? {
-        address: string,
-        timeoutBlock: number,
-        data: string,
-    } : T extends SwapAsset.BTC ? {
-        p2sh: string,
-        p2wsh: string,
-        scriptBytes: string,
-    } : T extends SwapAsset.BTC_LN ? {
-        nodeId: string,
-        amount: string,
-        hash: string,
-        request: string,
-    } : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? {
-        address: string,
-        data?: string, // Only provided for 'send' direction
-    } : T extends SwapAsset.EUR ? {
-        contractId?: string,
-    } : never,
+            address: string,
+            timeoutBlock: number,
+            data: string,
+        }
+        : T extends SwapAsset.BTC ? {
+                p2sh: string,
+                p2wsh: string,
+                scriptBytes: string,
+            }
+        : T extends SwapAsset.BTC_LN ? {
+                nodeId: string,
+                amount: string,
+                hash: string,
+                request: string,
+            }
+        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? {
+                address: string,
+                data?: string, // Only provided for 'send' direction
+            }
+        : T extends SwapAsset.EUR ? {
+                contractId?: string,
+            }
+        : never,
 };
 
 export type FastspotContractWithEstimate<T extends SwapAsset> = {
@@ -172,10 +178,10 @@ export type FastspotUserLimits = {
     monthlyRemaining: string,
     swap: string,
     current: string,
-}
+};
 
-export type FastspotResult
-    = FastspotAsset[]
+export type FastspotResult =
+    | FastspotAsset[]
     | FastspotEstimate[]
     | FastspotSwap
     | FastspotContractWithEstimate<SwapAsset>
@@ -205,9 +211,8 @@ export type AssetList = { [asset in SwapAsset]: Asset };
 
 // export type RequestAsset = Partial<Record<SwapAsset, number>>;
 export type RequestAsset<K extends SwapAsset> = {
-    [P in K]: (Record<P, number> & Partial<Record<Exclude<K, P>, never>>) extends infer O
-        ? { [Q in keyof O]: O[Q] }
-        : never
+    [P in K]: (Record<P, number> & Partial<Record<Exclude<K, P>, never>>) extends infer O ? { [Q in keyof O]: O[Q] }
+        : never;
 }[K];
 
 export type PriceData = {

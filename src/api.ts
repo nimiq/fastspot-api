@@ -1,34 +1,34 @@
 import {
-    FastspotResult,
-    FastspotError,
-    FastspotAsset,
-    FastspotEstimate,
-    FastspotPreSwap,
-    FastspotContractWithEstimate,
-    FastspotSwap,
-    FastspotLimits,
-    FastspotUserLimits,
-    RequestAsset,
-    SwapAsset,
-    Estimate,
-    PreSwap,
-    ContractWithEstimate,
-    Swap,
-    Limits,
-    UserLimits,
     AssetList,
+    ContractWithEstimate,
+    Estimate,
+    FastspotAsset,
+    FastspotContractWithEstimate,
+    FastspotError,
+    FastspotEstimate,
+    FastspotLimits,
+    FastspotPreSwap,
+    FastspotResult,
+    FastspotSwap,
+    FastspotUserLimits,
+    Limits,
+    PreSwap,
     ReferralCodes,
+    RequestAsset,
+    Swap,
+    SwapAsset,
+    UserLimits,
 } from './types';
 
 import {
-    validateRequestPairs,
-    convertFromData,
-    convertToData,
-    convertContract,
-    convertSwap,
-    convertLimits,
-    convertUserLimits,
     coinsToUnits,
+    convertContract,
+    convertFromData,
+    convertLimits,
+    convertSwap,
+    convertToData,
+    convertUserLimits,
+    validateRequestPairs,
 } from './helpers';
 
 let API_URL: string | undefined;
@@ -36,7 +36,11 @@ let API_KEY: string | undefined;
 let REFERRAL: ReferralCodes | undefined;
 let FETCH: typeof fetch;
 
-export function init(url: string, key: string, options?: Partial<{ referral?: ReferralCodes, customFetch?: typeof fetch }>) {
+export function init(
+    url: string,
+    key: string,
+    options?: Partial<{ referral?: ReferralCodes, customFetch?: typeof fetch }>,
+) {
     if (!url || !key) throw new Error('url and key must be provided');
     API_URL = url;
     API_KEY = key;
@@ -50,7 +54,7 @@ async function api(
     options?: {
         headers?: Record<string, string>,
         body?: object,
-    }
+    },
 ): Promise<FastspotResult> {
     if (!API_URL || !API_KEY) throw new Error('API URL and key not set, call init() first');
 
@@ -171,7 +175,7 @@ export async function confirmSwap(
                     crv: redeem.crv,
                     x: redeem.x,
                     ...(redeem.y ? { y: redeem.y } : {}),
-                }
+                },
             };
             break;
         case SwapAsset.BTC_LN:

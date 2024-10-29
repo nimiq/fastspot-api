@@ -1,21 +1,21 @@
 import {
-    RequestAsset,
-    SwapAsset,
-    ReferenceAsset,
-    Precision,
-    PriceData,
-    FastspotPrice,
-    FastspotContract,
-    FastspotPreSwap,
-    FastspotSwap,
-    FastspotLimits,
-    FastspotUserLimits,
     Contract,
-    PreSwap,
-    Swap,
-    Limits,
-    UserLimits,
+    FastspotContract,
+    FastspotLimits,
+    FastspotPreSwap,
+    FastspotPrice,
+    FastspotSwap,
+    FastspotUserLimits,
     HtlcDetails,
+    Limits,
+    Precision,
+    PreSwap,
+    PriceData,
+    ReferenceAsset,
+    RequestAsset,
+    Swap,
+    SwapAsset,
+    UserLimits,
 } from './types';
 
 export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | number, options: Partial<{
@@ -25,7 +25,7 @@ export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | 
     let decimals = Precision[asset] as number;
 
     // Some fees for USDC are provided in MATIC, and must be converted accordingly
-    if ((asset === SwapAsset.USDC || asset === SwapAsset.USDC_MATIC) && options.treatUsdcAsMatic) decimals = 18
+    if ((asset === SwapAsset.USDC || asset === SwapAsset.USDC_MATIC) && options.treatUsdcAsMatic) decimals = 18;
 
     if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
 
@@ -46,9 +46,14 @@ export function convertFromData(from: FastspotPrice): PriceData {
         asset,
         amount: coinsToUnits(asset, from.amount),
         fee: coinsToUnits(asset, from.fundingNetworkFee.total, { roundUp: true }),
-        ...(from.fundingNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        } : {}),
+        ...(from.fundingNetworkFee.perUnit
+            ? {
+                feePerUnit: coinsToUnits(asset, from.fundingNetworkFee.perUnit, {
+                    roundUp: true,
+                    treatUsdcAsMatic: true,
+                }),
+            }
+            : {}),
         serviceNetworkFee: coinsToUnits(asset, from.finalizeNetworkFee.total, { roundUp: true }),
         serviceEscrowFee: coinsToUnits(asset, from.operatingNetworkFee.total, { roundUp: true }),
     };
@@ -60,9 +65,14 @@ export function convertToData(to: FastspotPrice): PriceData {
         asset,
         amount: coinsToUnits(asset, to.amount),
         fee: coinsToUnits(asset, to.finalizeNetworkFee.total, { roundUp: true }),
-        ...(to.finalizeNetworkFee.perUnit ? {
-            feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, { roundUp: true, treatUsdcAsMatic: true }),
-        } : {}),
+        ...(to.finalizeNetworkFee.perUnit
+            ? {
+                feePerUnit: coinsToUnits(asset, to.finalizeNetworkFee.perUnit, {
+                    roundUp: true,
+                    treatUsdcAsMatic: true,
+                }),
+            }
+            : {}),
         serviceNetworkFee: coinsToUnits(asset, to.fundingNetworkFee.total, { roundUp: true }),
         serviceEscrowFee: coinsToUnits(asset, to.operatingNetworkFee.total, { roundUp: true }),
     };
@@ -102,7 +112,8 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
                 // TODO: Parse clearing instructions if provided
             };
             break;
-        default: throw new Error(`Invalid asset ${contract.asset}`);
+        default:
+            throw new Error(`Invalid asset ${contract.asset}`);
     }
 
     return {
@@ -111,7 +122,8 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
         refundAddress: contract.refund?.address || '',
         redeemAddress: contract.asset === SwapAsset.EUR
             ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
-            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC>).recipient.address,
+            : (contract as FastspotContract<SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC>)
+                .recipient.address,
         amount: coinsToUnits(contract.asset, contract.amount),
         timeout: contract.timeout,
         direction: contract.direction,

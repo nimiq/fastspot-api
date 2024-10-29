@@ -1,0 +1,11 @@
+meta {
+  name: Cancel Swap
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{API_URL}}/fast/v1/swaps/{{swap_id}}
+  body: none
+  auth: none
+}

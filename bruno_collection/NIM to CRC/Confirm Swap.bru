@@ -1,0 +1,33 @@
+meta {
+  name: Confirm Swap
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{API_URL}}/fast/v1/swaps/{{swap_id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "confirm": true,
+    "beneficiary": {
+      "CRC": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "uV_GMw9cXt9fSwuGq61GNfOejJcljCIDfC5aP_FVyx4"
+      }
+    },
+    "refund": {
+      "NIM": "NQ65 KV7F 17QA LBYD V0SA NQ6B FCLX 3MYG XK6C"
+    }
+  }
+}
+
+docs {
+  - Private Key: `47d8e55cda5a42a49b0f908cb916e45c958e663c7095ee8d12c3dd05a96dc435`
+  - Public Key: `b95fc6330f5c5edf5f4b0b86abad4635f39e8c97258c22037c2e5a3ff155cb1e`
+  - Address: `NQ65 KV7F 17QA LBYD V0SA NQ6B FCLX 3MYG XK6C`
+}

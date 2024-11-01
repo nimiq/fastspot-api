@@ -2,9 +2,18 @@ export enum SwapAsset {
     NIM = 'NIM',
     BTC = 'BTC',
     BTC_LN = 'BTC_LN',
-    USDC = 'USDC', // Legacy bridged USDC.e on Polygon
-    USDC_MATIC = 'USDC_MATIC', // Native USDC on Polygon
-    USDT_MATIC = 'USDT_MATIC', // Bridged USDT on Polygon
+    /**
+     * Legacy bridged USDC.e on Polygon.
+     */
+    USDC = 'USDC',
+    /**
+     * Native USDC on Polygon.
+     */
+    USDC_MATIC = 'USDC_MATIC',
+    /**
+     * Bridged USDT on Polygon.
+     */
+    USDT_MATIC = 'USDT_MATIC',
     EUR = 'EUR',
 }
 

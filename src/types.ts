@@ -2,9 +2,9 @@ export enum SwapAsset {
     NIM = 'NIM',
     BTC = 'BTC',
     BTC_LN = 'BTC_LN',
-    USDC = 'USDC',
-    USDC_MATIC = 'USDC_MATIC',
-    USDT = 'USDT', // Alternatively USDT_MATIC
+    USDC = 'USDC', // Legacy bridged USDC.e on Polygon
+    USDC_MATIC = 'USDC_MATIC', // Native USDC on Polygon
+    USDT_MATIC = 'USDT_MATIC', // Bridged USDT on Polygon
     EUR = 'EUR',
 }
 
@@ -23,7 +23,7 @@ export const Precision = {
     [SwapAsset.BTC_LN]: 8,
     [SwapAsset.USDC]: 6,
     [SwapAsset.USDC_MATIC]: 6,
-    [SwapAsset.USDT]: 6,
+    [SwapAsset.USDT_MATIC]: 6,
     [SwapAsset.EUR]: 2,
     [ReferenceAsset.USD]: 2,
 } as const;
@@ -127,7 +127,7 @@ export type FastspotContract<T extends SwapAsset> = {
                 hash: string,
                 request: string,
             }
-        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? {
+        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC ? {
                 address: string,
                 data?: string, // Only provided for 'send' direction
             }
@@ -272,7 +272,7 @@ export type Contract<T extends SwapAsset> = {
     htlc: T extends SwapAsset.NIM ? NimHtlcDetails
         : T extends SwapAsset.BTC ? BtcHtlcDetails
         : T extends SwapAsset.BTC_LN ? BtcLnHtlcDetails
-        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? Erc20HtlcDetails
+        : T extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC ? Erc20HtlcDetails
         : T extends SwapAsset.EUR ? EurHtlcDetails
         : never,
 };

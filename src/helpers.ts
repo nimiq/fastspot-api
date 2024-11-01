@@ -25,7 +25,7 @@ export function coinsToUnits(asset: SwapAsset | ReferenceAsset, value: string | 
     let decimals = Precision[asset] as number;
 
     // Some fees for USDC/T are provided in MATIC, and must be converted accordingly
-    const isPolygonToken = asset === SwapAsset.USDC || asset === SwapAsset.USDC_MATIC || asset === SwapAsset.USDT;
+    const isPolygonToken = asset === SwapAsset.USDC || asset === SwapAsset.USDC_MATIC || asset === SwapAsset.USDT_MATIC;
     if (isPolygonToken && options.treatPolygonTokenAsMatic) decimals = 18;
 
     if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
@@ -101,15 +101,15 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
             break;
         case SwapAsset.USDC:
         case SwapAsset.USDC_MATIC:
-        case SwapAsset.USDT:
+        case SwapAsset.USDT_MATIC:
             htlc = {
                 address: contract.id.substring(0, 2) === '0x' ? contract.id : `0x${contract.id}`,
-                contract:
-                    (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT>).intermediary
-                        .address,
-                data:
-                    (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT>).intermediary
-                        .data,
+                contract: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC>)
+                    .intermediary
+                    .address,
+                data: (contract as FastspotContract<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC>)
+                    .intermediary
+                    .data,
             };
             break;
         case SwapAsset.EUR:
@@ -129,7 +129,7 @@ export function convertContract<T extends SwapAsset>(contract: FastspotContract<
         redeemAddress: contract.asset === SwapAsset.EUR
             ? JSON.stringify((contract as FastspotContract<SwapAsset.EUR>).recipient)
             : (contract as FastspotContract<
-                SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT
+                SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC
             >)
                 .recipient.address,
         amount: coinsToUnits(contract.asset, contract.amount),

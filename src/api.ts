@@ -134,7 +134,7 @@ export async function createSwap(
 export async function confirmSwap(
     swap: PreSwap,
     redeem: {
-        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT,
+        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC,
         address: string,
     } | {
         asset: SwapAsset.EUR,
@@ -146,7 +146,7 @@ export async function confirmSwap(
         asset: SwapAsset.BTC_LN,
     },
     refund?: {
-        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT,
+        asset: SwapAsset.NIM | SwapAsset.BTC | SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC,
         address: string,
     } | {
         asset: SwapAsset.EUR,
@@ -185,7 +185,7 @@ export async function confirmSwap(
         case SwapAsset.BTC:
         case SwapAsset.USDC:
         case SwapAsset.USDC_MATIC:
-        case SwapAsset.USDT:
+        case SwapAsset.USDT_MATIC:
             beneficiary = { [redeem.asset]: redeem.address };
             break;
     }

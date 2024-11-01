@@ -33,8 +33,6 @@ export enum SwapStatus {
     WAITING_FOR_TRANSACTIONS = 'waiting-for-transactions',
     WAITING_FOR_REDEMPTION = 'waiting-for-redemption',
     FINISHED = 'finished',
-    /** @deprecated */
-    EXPIRED_PENDING_CONFIRMATIONS = 'expired-pending-confirmation',
     EXPIRED_PENDING_CONFIRMATION = 'expired-pending-confirmation',
     EXPIRED_PENDING_TRANSACTIONS = 'expired-pending-transactions',
     CANCELLED = 'cancelled',

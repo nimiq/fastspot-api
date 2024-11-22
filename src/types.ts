@@ -120,7 +120,10 @@ export type FastspotContract<T extends SwapAsset> = {
     id: string,
     intermediary: T extends SwapAsset.NIM ? {
             address: string,
-            timeoutBlock: number,
+            /**
+             * In milliseconds.
+             */
+            timeoutTime: number,
             data: string,
         }
         : T extends SwapAsset.BTC ? {
@@ -242,7 +245,10 @@ export type Estimate = {
 
 export type NimHtlcDetails = {
     address: string,
-    timeoutBlock: number,
+    /**
+     * In milliseconds.
+     */
+    timeoutTime: number,
     data: string,
 };
 

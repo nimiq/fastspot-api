@@ -25,11 +25,11 @@ export function coinsToUnits(asset: Ticker | ReferenceAsset, value: string | num
     if (typeof decimals === 'undefined') throw new Error(`Invalid asset ${asset}`);
 
     if (typeof value === 'number') {
-        return value * Math.pow(10, decimals);
+        return Math.round(value * Math.pow(10, decimals));
     }
 
     // Move the decimal point before parsing to number, to reduce inaccuracy due to floating point precision
-    const [coins, units] = value.split('.');
+    const [coins, units = ''] = value.split('.');
     value = `${coins}${units.substring(0, decimals).padEnd(decimals, '0')}.${units.substring(decimals)}`;
     return parseFloat(value);
 }

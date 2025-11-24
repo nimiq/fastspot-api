@@ -11,7 +11,8 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "test": "vitest run --dir src/"
   },
   "devDependencies": {
     "typescript": "^5.4.2",

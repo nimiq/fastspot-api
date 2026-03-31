@@ -15,7 +15,7 @@
     "test": "vitest run --dir src/"
   },
   "devDependencies": {
-    "typescript": "^5.4.2",
-    "vitest": "^4.0.12"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
   }
 }

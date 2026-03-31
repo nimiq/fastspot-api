@@ -9,6 +9,7 @@ export enum Ticker {
     NIM = 'NIM',
     BTC = 'BTC',
     USDC = 'USDC',
+    USDT = 'USDT',
     // USDC_e = 'USDC.e',
     EUR = 'EUR',
 }
@@ -19,6 +20,7 @@ export enum AssetId {
     BTC = 'BTC',
     BTC_LN = 'BTC_LN',
     USDC_MATIC = 'USDC_MATIC',
+    USDT_MATIC = 'USDT_MATIC',
     EUR = 'EUR',
 }
 
@@ -35,6 +37,7 @@ export const Precision = {
     [Ticker.NIM]: 5,
     [Ticker.BTC]: 8,
     [Ticker.USDC]: 6,
+    [Ticker.USDT]: 6,
     [Ticker.EUR]: 2,
     [ReferenceAsset.USD]: 2,
 } as const;

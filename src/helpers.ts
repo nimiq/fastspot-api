@@ -40,6 +40,7 @@ function assetToTicker(asset: AssetId): Ticker {
         case AssetId.BTC: return Ticker.BTC;
         case AssetId.BTC_LN: return Ticker.BTC;
         case AssetId.USDC_MATIC: return Ticker.USDC;
+        case AssetId.USDT_MATIC: return Ticker.USDT;
         case AssetId.EUR: return Ticker.EUR;
     }
 }
